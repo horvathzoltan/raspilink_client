@@ -15,13 +15,28 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
+/*UserActions*/
 void MainWindow::on_pushButton_clicked()
 {
-    zTrace();
     emit PushButtonActionTriggered(this);
 }
 
+void MainWindow::on_pushButton_connection_clicked()
+{
+    emit GetConnectionActionTriggered(this);
+}
+
+void MainWindow::on_pushButton_getApiver_clicked()
+{
+    emit GetApiverActionTriggered(this);
+}
+
+void MainWindow::on_pushButton_FeatureRequest_clicked()
+{
+    emit GetFeatureRequestActionTriggered(this);
+}
+
+/*GetViewModel*/
 auto MainWindow::get_DoWorkModel() -> MainViewModel::DoWorkModel
 {
     auto t = ui->label->text();
@@ -32,14 +47,7 @@ auto MainWindow::get_DoWorkModel() -> MainViewModel::DoWorkModel
 };
 
 
-void MainWindow::on_pushButton_connection_clicked()
-{
-    zTrace();
-    emit ConnectionActionTriggered(this);
-}
-
-/**/
-
+/*SetView*/
 void MainWindow::set_PhoneView(const MainViewModel::PhoneViewModelR &m)
 {
     ui->label->setText(m.msg);
@@ -49,3 +57,19 @@ void MainWindow::set_ConnectionView(const MainViewModel::ConnectionViewModelR &m
 {
     ui->label->setText(m.msg);
 }
+
+void MainWindow::set_ApiverView(const MainViewModel::ApiverViewModelR &m)
+{
+    ui->label->setText(m.msg);
+}
+
+void MainWindow::set_FeatureRequestView(const MainViewModel::FeatureRequestViewModelR &m)
+{
+     ui->label->setText(m.msg);
+}
+
+
+
+
+
+

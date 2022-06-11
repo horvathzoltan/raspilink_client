@@ -8,11 +8,19 @@ class MainViewModel
 {
 public:
 
+    struct FeatureRequestViewModelR{
+        QString msg;
+    };
+
     struct PhoneViewModelR{
         QString msg;
     };
 
     struct ConnectionViewModelR{
+        QString msg;
+    };
+
+    struct ApiverViewModelR{
         QString msg;
     };
 

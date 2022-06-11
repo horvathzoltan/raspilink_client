@@ -21,14 +21,21 @@ private:
 
 private slots:
     void processPushButtonAction(IMainView *sender);
-    void processConnectionAction(IMainView *sender);
-    void onResponseOkAction2(QString);
+    void processGetConnectionAction(IMainView *sender);
+    void onResponseConnectionAction(CheckinResponseModel);
+    void processGetApiverAction(IMainView *sender);
+    void onResponseGetApiverAction(QString);
+    void processGetFeatureRequestAction(IMainView *sender);
+    void onResponseGetFeatureRequestAction(QString);
 
 private:
     bool _isInited = false;
     DoWork _dowork;
-    IMainView *_connectionActionSender = nullptr;
+//    IMainView *_connectionActionSender = nullptr;
+//    IMainView *_apiverActionSender = nullptr;
+//    IMainView *_featureRequestActionSender = nullptr;
 
+    QMap<QUuid, IMainView*> _senders;
 };
 
 #endif // MAINPRESENTER_H

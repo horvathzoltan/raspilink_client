@@ -18,5 +18,10 @@ http://10.10.10.107:9098/checkin
 {"calls":{},"device":{"address":"","connected":false,"name":"Unknown","signal_strength":0},"media":{"album":"Unknown","artist":"Unknown","status":"Unknown","title":"Unknown"}}
 
 struct calls {}
-struct devide {}
+struct device {}
+address,connected,name,signal_strength
 struct media {}
+album,artist,status,title
+
+apiver
+{"major":5,"minor":3}

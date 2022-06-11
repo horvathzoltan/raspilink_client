@@ -3,6 +3,9 @@
 
 #include <QNetworkReply>
 #include <QUrlQuery>
+#include "zshortguid.h"
+
+const QString HttpHelper::KEY=QStringLiteral("key");
 
 HttpHelper::HttpHelper(QObject *parent)
     : QObject{parent}
@@ -15,23 +18,30 @@ bool HttpHelper::init(const QString& host)
     _url = QUrl(host);
 }
 
-void HttpHelper::SendGet(const QString& msg)
+QUuid HttpHelper::SendGet(const QString& msg)
 {
     QString urltxt = R"(http://10.10.10.107:9098/{COMMAND})";
     auto urltxt2 = urltxt.replace("{COMMAND}", msg);
     QUrl url = QUrl(urltxt2);
     QNetworkAccessManager * mgr = new QNetworkAccessManager(this);
 
-    QNetworkRequest request(url);
+    auto guid = QUuid::createUuid();
+    _actions.insert(guid, msg);
+    auto guid2 = zShortGuid::Encode(guid);
+    QUrlQuery q;
+    q.addQueryItem(KEY, guid2);
 
+    url.setQuery(q.query());
 //    QSslConfiguration conf = request.sslConfiguration();
 //    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
 //    request.setSslConfiguration(conf);
 
     connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(onFinish(QNetworkReply*)));
     connect(mgr,SIGNAL(finished(QNetworkReply*)),mgr,SLOT(deleteLater()));
+
+    QNetworkRequest request(url);
     mgr->get(request);
-    zInfo("pinty");
+    return guid;
 }
 
 void HttpHelper::SendPost(const QString& source_lang, const QString& dest_lang, const QString& msg)
@@ -76,7 +86,18 @@ void HttpHelper::onFinish(QNetworkReply *rep)
 {
     QByteArray b = rep->readAll();
     QString err = rep->errorString();
-    QString str(b);
-    zInfo("reply: "+str);
-    emit ResponseOk(b);
+    auto url = rep->request().url();
+
+    if(url.hasQuery()){
+        auto queryString = url.query();
+        auto q = QUrlQuery(queryString);
+        if(q.hasQueryItem(KEY)){
+            QString keyString=q.queryItemValue(KEY);
+            auto guid = zShortGuid::Decode(keyString);
+            auto action = _actions[guid];
+            _actions.remove(guid);
+            zInfo("reply: "+b);
+            emit ResponseOk(guid, action, b);
+        }
+    }
 }

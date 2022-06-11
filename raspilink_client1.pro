@@ -18,7 +18,8 @@ SOURCES += \
     logger.cpp \
     main.cpp \
     mainpresenter.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    zshortguid.cpp
 
 HEADERS += \
     dowork.h \
@@ -29,7 +30,13 @@ HEADERS += \
     macro.h \
     mainpresenter.h \
     mainwindow.h \
-    models/mainviewmodel.h
+    models/apiver.h \
+    models/checkinresponse.h \
+    models/device.h \
+    models/feature_request.h \
+    models/mainviewmodel.h \
+    models/media.h \
+    zshortguid.h
 
 FORMS += \
     mainwindow.ui
