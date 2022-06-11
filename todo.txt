@@ -1,0 +1,22 @@
+//todo
+/*
+@app.route('/apiver')
+@app.route('/feature_request')
+@app.route('/checkin')
+@app.route('/calls/answer')
+@app.route('/calls/hangup')
+@app.route('/calls/hangupall')
+@app.route('/calls/dial')
+@app.route('/media/play')
+@app.route('/media/pause')
+@app.route('/media/skip')
+@app.route('/media/back')
+*/
+
+http://10.10.10.107:9098/checkin
+
+{"calls":{},"device":{"address":"","connected":false,"name":"Unknown","signal_strength":0},"media":{"album":"Unknown","artist":"Unknown","status":"Unknown","title":"Unknown"}}
+
+struct calls {}
+struct devide {}
+struct media {}
