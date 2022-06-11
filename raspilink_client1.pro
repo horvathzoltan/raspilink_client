@@ -13,6 +13,7 @@ DEFINES += TARGI=$$TARGET
 
 SOURCES += \
     dowork.cpp \
+    helpers/commandlineparserhelper.cpp \
     helpers/httphelper.cpp \
     logger.cpp \
     main.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 
 HEADERS += \
     dowork.h \
+    helpers/commandlineparserhelper.h \
     helpers/httphelper.h \
     imainview.h \
     logger.h \
