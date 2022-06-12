@@ -16,17 +16,18 @@ auto CommadLineArgs::Parse(const QCoreApplication& app) -> CommadLineArgs
     const QString OPTION_WORKINGDIR = QStringLiteral("working_dir");
 //    const QString OPTION_OUT = QStringLiteral("output");
 //    const QString OPTION_BACKUP = QStringLiteral("backup");
-//    const QString OPTION_TEST = QStringLiteral("test");
+    const QString OPTION_TEST = QStringLiteral("test");
 
     CommandLineParserHelper::addOption(&parser, OPTION_WORKINGDIR, QStringLiteral("working directory"));
 //    CommandLineParserHelper::addOption(&parser, OPTION_OUT, QStringLiteral("g-code file as output"));
 //    CommandLineParserHelper::addOptionBool(&parser, OPTION_BACKUP, QStringLiteral("set if backup is needed"));
-//    CommandLineParserHelper::addOptionBool(&parser, OPTION_TEST, QStringLiteral("set to activate test mode"));
+    CommandLineParserHelper::addOptionBool(&parser, OPTION_TEST, QStringLiteral("set to activate test mode"));
 
     parser.process(app);
 
     CommadLineArgs p;
     p.working_dir = parser.value(OPTION_WORKINGDIR);
+    p.isTest = parser.isSet(OPTION_TEST);
     return p;
 }
 

@@ -32,10 +32,10 @@ void MainPresenter::appendView(IMainView *w)
 }
 
 
-auto MainPresenter::init(CommadLineArgs args) -> bool
+auto MainPresenter::init(const QString& host, int port) -> bool
 {
     _isInited = false;
-    _dowork.init(args);
+    _dowork.init(host, port);
     connect(&_dowork,SIGNAL(ResponseConnectionAction(ResponseModel::Checkin)),
             this,SLOT(onResponseConnectionAction(ResponseModel::Checkin)));
     connect(&_dowork,SIGNAL(ResponseGetApiverAction(ResponseModel::GetApiVer)),

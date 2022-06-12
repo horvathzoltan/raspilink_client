@@ -30,15 +30,11 @@ DoWork::DoWork(QObject *parent) :QObject(parent)
 
 }
 
-
-
-
-auto DoWork::init(CommadLineArgs args) -> bool
+auto DoWork::init(const QString& host, int port) -> bool
 {
     _isInited = false;
-    if(!args.IsValid()) return false;
 
-    if(!_httpHelper.init("10.10.10.107", 9098)) return _isInited;
+    if(!_httpHelper.init(host, port)) return _isInited;
     //params = p;
 
     //_result = { Result::State::NotCalculated, -1};

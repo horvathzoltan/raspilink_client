@@ -29,7 +29,7 @@ private:
 public:
     explicit DoWork(QObject *parent = nullptr);   
 
-    bool init(CommadLineArgs args);
+    bool init(const QString& host, int port);
     QUuid GetCheckin();
     QUuid GetApiver();
     QUuid GetFeatureRequest();

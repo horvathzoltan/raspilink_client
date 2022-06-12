@@ -4,7 +4,8 @@
 #include "macro.h"
 #include "models/commandlineargs.h"
 #include <QApplication>
-
+#include <models/settings.h>
+#include "logger.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,9 +21,16 @@ int main(int argc, char *argv[])
 
     CommadLineArgs params = CommadLineArgs::Parse(a);
 
+    Settings settings = Settings::Load(params.working_dir);
+    if(!settings.isValid())
+    {
+        zInfo("cannot load settings");
+        return 1;
+    }
+
     MainWindow w;
     MainPresenter p;
-    p.init(params);
+    p.init(settings.host, settings.port);
     p.appendView(&w);
     w.show();
     p.initView(&w);

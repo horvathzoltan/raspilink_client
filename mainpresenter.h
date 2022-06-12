@@ -17,7 +17,7 @@ public:
     explicit MainPresenter(QObject *parent = nullptr);
     void appendView(IMainView *w);
     void initView(IMainView *w) const;
-    bool init(CommadLineArgs params);
+    bool init(const QString& host, int port);
 private:
     QList<IMainView*> _views;
 

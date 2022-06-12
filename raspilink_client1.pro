@@ -14,19 +14,24 @@ DEFINES += TARGI=$$TARGET
 SOURCES += \
     dowork.cpp \
     helpers/commandlineparserhelper.cpp \
+    helpers/filenamehelper.cpp \
     helpers/httphelper.cpp \
+    helpers/textfilehelper.cpp \
     logger.cpp \
     main.cpp \
     mainpresenter.cpp \
     mainwindow.cpp \
     models/commandlineargs.cpp \
     models/model.cpp \
+    models/settings.cpp \
     zshortguid.cpp
 
 HEADERS += \
     dowork.h \
     helpers/commandlineparserhelper.h \
+    helpers/filenamehelper.h \
     helpers/httphelper.h \
+    helpers/textfilehelper.h \
     imainview.h \
     logger.h \
     macro.h \
@@ -35,6 +40,7 @@ HEADERS += \
     models/commandlineargs.h \
     models/model.h \
     models/responsemodel.h \
+    models/settings.h \
     models/viewmodel.h \
     zshortguid.h
 
@@ -47,4 +53,5 @@ else: unix:!android: target.path = /home/pi/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    settings.ini \
     todo.txt
