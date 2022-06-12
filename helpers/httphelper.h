@@ -16,7 +16,7 @@ private:
     static const QString KEY;
 public:
     explicit HttpHelper(QObject *parent = nullptr);
-    bool init(const QString& host);
+    bool init(const QString& host, int port);
 
     void SendPost(const QString& source_lang, const QString& dest_lang, const QString& msg);
 
@@ -27,6 +27,7 @@ signals:
     void ResponseOk(const QUuid& guid, const QString& key, QByteArray s);
 
 private:
+    bool _inited = false;
     QUrl _url;
     QMap<QUuid, QString> _actions;
 };

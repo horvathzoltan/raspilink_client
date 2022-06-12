@@ -2,8 +2,9 @@
 #define DOWORK_H
 
 #include <QCoreApplication>
-#include <models/checkinresponse.h>
-#include "models/mainviewmodel.h"
+#include <models/responsemodel.h>
+#include "models/commandlineargs.h"
+#include "models/viewmodel.h"
 #include "helpers/httphelper.h"
 
 
@@ -26,23 +27,9 @@ private:
     static const QString MEDIA_BACK;
     //enum GetRequestType{checkin, apiver};
 public:
-    explicit DoWork(QObject *parent = nullptr);
+    explicit DoWork(QObject *parent = nullptr);   
 
-    struct Params{
-    public:
-        QString inFile;
-        QString outFile;
-        bool isBackup;
-        bool isTest = false;
-
-        bool IsValid();
-
-        static Params Parse(const QCoreApplication& app);
-    };
-
-
-    bool init(Params p);
-    MainViewModel::DoWorkRModel Work1(MainViewModel::DoWorkModel m);
+    bool init(CommadLineArgs args);
     QUuid GetCheckin();
     QUuid GetApiver();
     QUuid GetFeatureRequest();
@@ -58,20 +45,16 @@ public:
     QUuid GetMediaBack();
 private:
     bool _isInited = false;
-    //bool _isEventLoopNeeded = false;
-    Params params;
-    //QMap<QString, Wcode> _wcodes;
+    //CommadLineArgs params;
     HttpHelper _httpHelper;
-    //Result doWork2();
-    //QByteArray _prevCheckin;
     void GetCheckinResponse(const QUuid& guid, QByteArray s);
-    void GetApiverResponse(QByteArray s);
-    void GetFeatureRequestResponse(QByteArray s);
+    void GetApiverResponse(const QUuid& guid, QByteArray s);
+    void GetFeatureRequestResponse(const QUuid& guid, QByteArray s);
 
 signals:
-    void ResponseConnectionAction(CheckinResponseModel);
-    void ResponseGetApiverAction(QString);
-    void ResponseGetFeatureRequestAction(QString);
+    void ResponseConnectionAction(ResponseModel::Checkin);
+    void ResponseGetApiverAction(ResponseModel::GetApiVer);
+    void ResponseGetFeatureRequestAction(ResponseModel::GetFeature);
 
 private slots:
     void ResponseOkAction(const QUuid& guid, const QString& action, QByteArray s);

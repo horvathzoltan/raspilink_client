@@ -2,7 +2,9 @@
 #define MAINPRESENTER_H
 
 #include <QObject>
+#include <models/responsemodel.h>
 #include "imainview.h"
+#include "models/commandlineargs.h"
 #include "dowork.h"
 
 class IMainView;
@@ -15,26 +17,21 @@ public:
     explicit MainPresenter(QObject *parent = nullptr);
     void appendView(IMainView *w);
     void initView(IMainView *w) const;
-    bool init(DoWork::Params params);
+    bool init(CommadLineArgs params);
 private:
     QList<IMainView*> _views;
 
 private slots:
-    void processPushButtonAction(IMainView *sender);
     void processGetConnectionAction(IMainView *sender);
-    void onResponseConnectionAction(CheckinResponseModel);
+    void onResponseConnectionAction(ResponseModel::Checkin);
     void processGetApiverAction(IMainView *sender);
-    void onResponseGetApiverAction(QString);
+    void onResponseGetApiverAction(ResponseModel::GetApiVer);
     void processGetFeatureRequestAction(IMainView *sender);
-    void onResponseGetFeatureRequestAction(QString);
+    void onResponseGetFeatureRequestAction(ResponseModel::GetFeature);
 
 private:
     bool _isInited = false;
     DoWork _dowork;
-//    IMainView *_connectionActionSender = nullptr;
-//    IMainView *_apiverActionSender = nullptr;
-//    IMainView *_featureRequestActionSender = nullptr;
-
     QMap<QUuid, IMainView*> _senders;
 };
 

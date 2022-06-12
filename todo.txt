@@ -15,7 +15,9 @@
 
 http://10.10.10.107:9098/checkin
 
+
 {"calls":{},"device":{"address":"","connected":false,"name":"Unknown","signal_strength":0},"media":{"album":"Unknown","artist":"Unknown","status":"Unknown","title":"Unknown"}}
+{"calls":{},"device":{"address":"E4:0E:EE:95:55:A0","connected":true,"name":"HUAWEI P20 Pro","signal_strength":-1},"media":{"album":"","artist":"","status":"stopped","title":"Not Provided"}}
 
 struct calls {}
 struct device {}

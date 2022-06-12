@@ -2,7 +2,8 @@
 #include "logger.h"
 #include "mainpresenter.h"
 #include <QDebug>
-#include <models/mainviewmodel.h>
+#include <models/viewmodel.h>
+#include <models/responsemodel.h>
 
 MainPresenter::MainPresenter(QObject *parent) :QObject(parent)
 {
@@ -16,31 +17,31 @@ void MainPresenter::appendView(IMainView *w)
 
     auto *view_obj = dynamic_cast<QObject*>(w);
 
-    QObject::connect(view_obj, SIGNAL(PushButtonActionTriggered(IMainView *)),
-                     this, SLOT(processPushButtonAction(IMainView *)));
+    QObject::connect(view_obj, SIGNAL(PushButtonActionTriggered(IMainView*)),
+                     this, SLOT(processPushButtonAction(IMainView*)));
 
-    QObject::connect(view_obj, SIGNAL(GetConnectionActionTriggered(IMainView *)),
-                     this, SLOT(processGetConnectionAction(IMainView *)));
+    QObject::connect(view_obj, SIGNAL(GetConnectionActionTriggered(IMainView*)),
+                     this, SLOT(processGetConnectionAction(IMainView*)));
 
-    QObject::connect(view_obj, SIGNAL(GetApiverActionTriggered(IMainView *)),
-                     this, SLOT(processGetApiverAction(IMainView *)));
+    QObject::connect(view_obj, SIGNAL(GetApiverActionTriggered(IMainView*)),
+                     this, SLOT(processGetApiverAction(IMainView*)));
 
-    QObject::connect(view_obj, SIGNAL(GetFeatureRequestActionTriggered(IMainView *)),
-                     this, SLOT(processGetFeatureRequestAction(IMainView *)));
+    QObject::connect(view_obj, SIGNAL(GetFeatureRequestActionTriggered(IMainView*)),
+                     this, SLOT(processGetFeatureRequestAction(IMainView*)));
     //refreshView(w);
 }
 
 
-auto MainPresenter::init(DoWork::Params params) -> bool
+auto MainPresenter::init(CommadLineArgs args) -> bool
 {
     _isInited = false;
-    _dowork.init(params);
-    connect(&_dowork,SIGNAL(ResponseConnectionAction(CheckinResponseModel)),
-            this,SLOT(onResponseConnectionAction(CheckinResponseModel)));
-    connect(&_dowork,SIGNAL(ResponseGetApiverAction(QString)),
-            this,SLOT(onResponseGetApiverAction(QString)));
-    connect(&_dowork,SIGNAL(ResponseGetFeatureRequestAction(QString)),
-            this,SLOT(onResponseGetFeatureRequestAction(QString)));
+    _dowork.init(args);
+    connect(&_dowork,SIGNAL(ResponseConnectionAction(ResponseModel::Checkin)),
+            this,SLOT(onResponseConnectionAction(ResponseModel::Checkin)));
+    connect(&_dowork,SIGNAL(ResponseGetApiverAction(ResponseModel::GetApiVer)),
+            this,SLOT(onResponseGetApiverAction(ResponseModel::GetApiVer)));
+    connect(&_dowork,SIGNAL(ResponseGetFeatureRequestAction(ResponseModel::GetFeature)),
+            this,SLOT(onResponseGetFeatureRequestAction(ResponseModel::GetFeature)));
 
     //_result = { Result::State::NotCalculated, -1};
     _isInited = true;
@@ -52,56 +53,47 @@ void MainPresenter::initView(IMainView *w) const {
     //w->set_DoWorkRModel(rm);
 };
 
-void MainPresenter::processPushButtonAction(IMainView *sender){
-    MainViewModel::DoWorkModel m = sender->get_DoWorkModel();
-
-    auto rm = _dowork.Work1(m);
-
-    sender->set_PhoneView({rm.txt});
-}
 /*GetConnection*/
 void MainPresenter::processGetConnectionAction(IMainView *sender){
     auto guid = _dowork.GetCheckin();
     _senders.insert(guid,sender);
 }
 
-void MainPresenter::onResponseConnectionAction(CheckinResponseModel m)
+void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
 {
-    MainViewModel::ConnectionViewModelR rm = {m.msg};
+    ViewModel::ConnectionR rm = {m.msg};
     if(_senders.contains(m.guid)){
         _senders[m.guid]->set_ConnectionView(rm);
         _senders.remove(m.guid);
     }
 }
-/*GetApiver*/
 
+/*GetApiver*/
 void MainPresenter::processGetApiverAction(IMainView *sender){
-    //_apiverActionSender = sender;
-    auto guid = dowork.GetApiver();
+    auto guid = _dowork.GetApiver();
     _senders.insert(guid,sender);
 }
 
-void MainPresenter::onResponseGetApiverAction(QString msg)
+void MainPresenter::onResponseGetApiverAction(ResponseModel::GetApiVer m)
 {
-    MainViewModel::ApiverViewModelR rm = {msg};
+    ViewModel::ApiverViewR rm = {m.msg};
     if(_senders.contains(m.guid)){
         _senders[m.guid]->set_ApiverView(rm);
         _senders.remove(m.guid);
     }
-
 }
 
+/*GetFeature*/
 void MainPresenter::processGetFeatureRequestAction(IMainView *sender){
-    _featureRequestActionSender = sender;
-    _dowork.GetFeatureRequest();
+    auto guid = _dowork.GetFeatureRequest();
+    _senders.insert(guid,sender);
 }
 
-void MainPresenter::onResponseGetFeatureRequestAction(QString msg)
+void MainPresenter::onResponseGetFeatureRequestAction(ResponseModel::GetFeature m)
 {
-    MainViewModel::FeatureRequestViewModelR rm = {msg};
-    if(_featureRequestActionSender){
-        _featureRequestActionSender->set_FeatureRequestView(rm);
+    ViewModel::FeatureRequestR rm = {m.msg};
+    if(_senders.contains(m.guid)){
+        _senders[m.guid]->set_FeatureRequestView(rm);
+        _senders.remove(m.guid);
     }
-
-    _featureRequestActionSender = nullptr;
 }

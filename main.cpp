@@ -2,6 +2,7 @@
 #include "mainwindow.h"
 #include "mainpresenter.h"
 #include "macro.h"
+#include "models/commandlineargs.h"
 #include <QApplication>
 
 
@@ -17,7 +18,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName(poj);
 
-    DoWork::Params params = DoWork::Params::Parse(a);
+    CommadLineArgs params = CommadLineArgs::Parse(a);
 
     MainWindow w;
     MainPresenter p;

@@ -2,15 +2,14 @@
 #include "dowork.h"
 #include "logger.h"
 #include "helpers/commandlineparserhelper.h"
-#include "models/checkinresponse.h"
+#include "models/responsemodel.h"
 #include <QCommandLineParser>
+#include <QFileInfo>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <models/apiver.h>
-#include <models/device.h>
-#include <models/feature_request.h>
-#include <models/media.h>
+#include <models/model.h>
+#include <models/featurerequest.h>
 
 const QString DoWork::CHECKIN = QStringLiteral("checkin");
 const QString DoWork::APIVER = QStringLiteral("apiver");
@@ -31,56 +30,16 @@ DoWork::DoWork(QObject *parent) :QObject(parent)
 
 }
 
-auto DoWork::Params::Parse(const QCoreApplication& app) -> DoWork::Params
-{
-    QCommandLineParser parser;
-
-    parser.setApplicationDescription(QStringLiteral("command line test1 app."));
-    parser.addHelpOption();
-    parser.addVersionOption();
-
-    const QString OPTION_IN = QStringLiteral("input");
-    const QString OPTION_OUT = QStringLiteral("output");
-    const QString OPTION_BACKUP = QStringLiteral("backup");
-    const QString OPTION_TEST = QStringLiteral("test");
-
-    CommandLineParserHelper::addOption(&parser, OPTION_IN, QStringLiteral("geometry file as input"));
-    CommandLineParserHelper::addOption(&parser, OPTION_OUT, QStringLiteral("g-code file as output"));
-    CommandLineParserHelper::addOptionBool(&parser, OPTION_BACKUP, QStringLiteral("set if backup is needed"));
-    CommandLineParserHelper::addOptionBool(&parser, OPTION_TEST, QStringLiteral("set to activate test mode"));
-
-    parser.process(app);
-
-    return {
-        parser.value(OPTION_IN),
-        parser.value(OPTION_OUT),
-        parser.isSet(OPTION_BACKUP),
-        parser.isSet(OPTION_TEST)
-    };
-}
-
-auto DoWork::Params::IsValid() -> bool
-{
-    QStringList err;
-//    if(inFile.isEmpty())
-//    {
-//        err.append(QStringLiteral("inFile is empty"));
-//    }
-//    if(inFile.isEmpty())
-//    {
-//        err.append(QStringLiteral("outFile is empty"));
-//    }
-    if(!err.isEmpty()) qDebug()<<err;
-            return err.isEmpty();
-}
 
 
-auto DoWork::init(DoWork::Params p) -> bool
+
+auto DoWork::init(CommadLineArgs args) -> bool
 {
     _isInited = false;
-    if(!p.IsValid()) return false;
+    if(!args.IsValid()) return false;
 
-    params = p;
+    if(!_httpHelper.init("10.10.10.107", 9098)) return _isInited;
+    //params = p;
 
     //_result = { Result::State::NotCalculated, -1};
     QObject::connect(&_httpHelper, SIGNAL(ResponseOk(const QUuid&, const QString&, QByteArray)),
@@ -89,16 +48,6 @@ auto DoWork::init(DoWork::Params p) -> bool
     _isInited = true;
     return true;
 }
-
-auto DoWork::Work1(MainViewModel::DoWorkModel m) -> MainViewModel::DoWorkRModel
-{
-    if(!_isInited) return {};
-
-    MainViewModel::DoWorkRModel rm;
-    rm.txt = QString::number(m.i+1);
-    return rm;
-}
-
 
 QUuid DoWork::GetCheckin()
 {
@@ -157,8 +106,8 @@ QUuid DoWork::GetMediaBack()
 
 void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteArray s){
     if(action==CHECKIN) GetCheckinResponse(guid,s);
-    else if(action==APIVER) GetApiverResponse(s);
-    else if(action==FEATURE_REQUEST) GetFeatureRequestResponse(s);
+    else if(action==APIVER) GetApiverResponse(guid,s);
+    else if(action==FEATURE_REQUEST) GetFeatureRequestResponse(guid,s);
     else zInfo("unknown action: "+action);
 }
 
@@ -166,64 +115,64 @@ void DoWork::GetCheckinResponse(const QUuid& guid, QByteArray s){
     QJsonParseError errorPtr;
     QJsonDocument doc = QJsonDocument::fromJson(s, &errorPtr);
     QJsonObject rootobj = doc.object();
-    CheckinResponseModel m(guid);
+    ResponseModel::Checkin r(guid);
 
     if(rootobj.isEmpty()){
-        m.msg = "no response";
+        r.msg = "no response";
     }else{
         auto deviceJ = rootobj.value("device").toObject();
         if(deviceJ.isEmpty()){
-            m.msg = "no device";
+            r.msg = "no device";
         }else{
-            Device device;
-            if(!deviceJ.isEmpty()) device=Device::JsonParse(deviceJ);
-            if(!m.msg.isEmpty()) m.msg+='\n';
-            m.msg += "device: "+device.toString();
+            Model::Device device;
+            if(!deviceJ.isEmpty()) device = Model::Device::JsonParse(deviceJ);
+            if(!r.msg.isEmpty()) r.msg+='\n';
+            r.msg += "device: "+device.toString();
         }
         auto mediaJ = rootobj.value("media").toObject();
         if(mediaJ.isEmpty()){
-            m.msg = "no media";
+            r.msg = "no media";
         }else{
-            Media media;
-            if(!mediaJ.isEmpty()) media=Media::JsonParse(mediaJ);
-            if(!m.msg.isEmpty()) m.msg+='\n';
-            m.msg += "media: "+media.toString();
+            Model::Media media;
+            if(!mediaJ.isEmpty()) media=Model::Media::JsonParse(mediaJ);
+            if(!r.msg.isEmpty()) r.msg+='\n';
+            r.msg += "media: "+media.toString();
         }
     }
 
-    emit ResponseConnectionAction(m);
+    emit ResponseConnectionAction(r);
 }
 
-void DoWork::GetApiverResponse(QByteArray s){
+void DoWork::GetApiverResponse(const QUuid& guid, QByteArray s){
     QJsonParseError errorPtr;
     QJsonDocument doc = QJsonDocument::fromJson(s, &errorPtr);
     QJsonObject rootobj = doc.object();
+    ResponseModel::GetApiVer r(guid);
 
-    QString msg;
-    Apiver m;
+    Model::Apiver m;
     if(rootobj.isEmpty()){
-        msg = "no response";
+        r.msg = "no response";
     }else{
-        m=Apiver::JsonParse(rootobj);
-        msg = "apiver: "+m.toString();
+        m = Model::Apiver::JsonParse(rootobj);
+        r.msg = "apiver: "+m.toString();
     }
 
-    emit ResponseGetApiverAction(msg);
+    emit ResponseGetApiverAction(r);
 }
 
-void DoWork::GetFeatureRequestResponse(QByteArray s){
+void DoWork::GetFeatureRequestResponse(const QUuid& guid, QByteArray s){
     QJsonParseError errorPtr;
     QJsonDocument doc = QJsonDocument::fromJson(s, &errorPtr);
     QJsonObject rootobj = doc.object();
+    ResponseModel::GetFeature r(guid);
 
-    QString msg;
-    FeatureRequest m;
+    Model::FeatureRequest m;
     if(rootobj.isEmpty()){
-        msg = "no response";
+        r.msg = "no response";
     }else{
-        m = FeatureRequest::JsonParse(rootobj);
-        msg = "features: "+m.toString();
+        m = Model::FeatureRequest::JsonParse(rootobj);
+        r.msg = "features: "+m.toString();
     }
 
-    emit ResponseGetFeatureRequestAction(msg);
+    emit ResponseGetFeatureRequestAction(r);
 }

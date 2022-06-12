@@ -19,6 +19,8 @@ SOURCES += \
     main.cpp \
     mainpresenter.cpp \
     mainwindow.cpp \
+    models/commandlineargs.cpp \
+    models/model.cpp \
     zshortguid.cpp
 
 HEADERS += \
@@ -30,12 +32,10 @@ HEADERS += \
     macro.h \
     mainpresenter.h \
     mainwindow.h \
-    models/apiver.h \
-    models/checkinresponse.h \
-    models/device.h \
-    models/feature_request.h \
-    models/mainviewmodel.h \
-    models/media.h \
+    models/commandlineargs.h \
+    models/model.h \
+    models/responsemodel.h \
+    models/viewmodel.h \
     zshortguid.h
 
 FORMS += \

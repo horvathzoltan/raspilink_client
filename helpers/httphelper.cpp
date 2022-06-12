@@ -13,33 +13,41 @@ HttpHelper::HttpHelper(QObject *parent)
 
 }
 
-bool HttpHelper::init(const QString& host)
+bool HttpHelper::init(const QString& host, int port)
 {
-    _url = QUrl(host);
+    _inited = false;
+    if(port<0||port>65535) return _inited;
+    _url = QUrl();
+    _url.setScheme("http");
+    _url.setHost(host);
+    _url.setPort(port);
+    if(!_url.isValid()) return _inited;
+    _inited = true;
+    return _inited;
 }
 
-QUuid HttpHelper::SendGet(const QString& msg)
+QUuid HttpHelper::SendGet(const QString& action)
 {
-    QString urltxt = R"(http://10.10.10.107:9098/{COMMAND})";
-    auto urltxt2 = urltxt.replace("{COMMAND}", msg);
-    QUrl url = QUrl(urltxt2);
+    _url.setPath((action.startsWith('/')?action:'/'+action));
     QNetworkAccessManager * mgr = new QNetworkAccessManager(this);
 
     auto guid = QUuid::createUuid();
-    _actions.insert(guid, msg);
+    _actions.insert(guid, action);
     auto guid2 = zShortGuid::Encode(guid);
     QUrlQuery q;
     q.addQueryItem(KEY, guid2);
 
-    url.setQuery(q.query());
-//    QSslConfiguration conf = request.sslConfiguration();
-//    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
-//    request.setSslConfiguration(conf);
+    _url.setQuery(q.query());
 
     connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(onFinish(QNetworkReply*)));
     connect(mgr,SIGNAL(finished(QNetworkReply*)),mgr,SLOT(deleteLater()));
 
-    QNetworkRequest request(url);
+    QNetworkRequest request(_url);
+    if(_url.scheme()=="https"){
+        QSslConfiguration conf = request.sslConfiguration();
+        conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+        request.setSslConfiguration(conf);
+    }
     mgr->get(request);
     return guid;
 }
