@@ -7,6 +7,7 @@
 QString FileNameHelper::GetAbsolutFn(const QString& fn){
     QFileInfo fi(fn);
 
-    if(fi.isAbsolute()) return fn;
+    if(fi.isAbsolute())
+        return fn;
     return QDir::homePath()+'/'+ fn;
 }

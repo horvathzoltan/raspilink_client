@@ -7,6 +7,7 @@
 
 #include <helpers/textfilehelper.h>
 #include <helpers/filenamehelper.h>
+#include <QCoreApplication>
 
 Settings::Settings()
 {
@@ -16,13 +17,16 @@ Settings::Settings()
 Settings Settings::Load(const QString& dir)
 {
     const QString SETTINGS_FN = "settings.ini";
+
     QFileInfo fi(dir);
     if(fi.isFile()){
         zInfo("not a directory:"+dir);
         return{};
     }
 
-    QString absoluteFilePath = FileNameHelper::GetAbsolutFn(dir+ "/" + SETTINGS_FN);
+    QString p(dir);
+    if(dir.isEmpty()) p = qApp->applicationDirPath();
+    QString absoluteFilePath = FileNameHelper::GetAbsolutFn(p+ "/" + SETTINGS_FN);
 
 
     QFileInfo fi2(absoluteFilePath);
