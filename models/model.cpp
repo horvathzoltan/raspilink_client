@@ -13,12 +13,29 @@ QString Model::ApiVer::toString(){
     return QString::number(major)+'.'+QString::number(minor);
 }
 
+Model::Media::Status Model::Media::ParseStatus(const QString &s)
+{
+    if(s=="playing") return Status::playing;
+    if(s=="paused") return Status::paused;
+    if(s=="stopped") return Status::stopped;
+    return Status::unknown;
+}
+
+QString Model::Media::StatusToString(Model::Media::Status s)
+{
+    if(s==Status::playing) return "playing";
+    if(s==Status::paused) return "paused";
+    if(s==Status::stopped) return "stopped";
+    return "unknown";
+}
+
 Model::Media Model::Media::JsonParse(const QJsonObject& j)
 {
     Model::Media m;
     m.album = j.value("album").toString();
     m.artist = j.value("artist").toString();
-    m.status = j.value("status").toString();
+    QString statustxt = j.value("status").toString().toLower();
+    m.status = ParseStatus(statustxt);
     m.title = j.value("title").toString();
     return m;
 }

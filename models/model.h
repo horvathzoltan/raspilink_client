@@ -15,9 +15,13 @@ namespace Model
     };
 
     struct Media{
+        enum Status {unknown,playing,stopped,paused};
+        static Status ParseStatus(const QString& s);
+        static QString StatusToString(Status s);
+
         QString album;
         QString artist;
-        QString status;
+        Status status=Status::unknown;
         QString title;
 
         static Model::Media JsonParse(const QJsonObject &j);
@@ -44,13 +48,17 @@ namespace Model
         QString toString();
     };    
 
+    struct Calls{
+        QString msg;
+    };
+
     struct Data{
         ApiVer apiVer;
         Features features;
         Media media;
         Device device;
-    } data;
-
+        Calls calls;
+    };
 };
 
 #endif // MODELS_H

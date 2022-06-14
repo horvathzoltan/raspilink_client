@@ -33,6 +33,7 @@ private:
     bool _isInited = false;
     DoWork _dowork;
     QMap<QUuid, IMainView*> _senders;
+    Model::Data _data;
 };
 
 #endif // MAINPRESENTER_H

@@ -120,19 +120,19 @@ void DoWork::GetCheckinResponse(const QUuid& guid, QByteArray s){
         if(deviceJ.isEmpty()){
             r.msg = "no device";
         }else{
-            Model::Device device;
-            if(!deviceJ.isEmpty()) device = Model::Device::JsonParse(deviceJ);
+            //Model::Device device;
+            if(!deviceJ.isEmpty()) r.device = Model::Device::JsonParse(deviceJ);
             if(!r.msg.isEmpty()) r.msg+='\n';
-            r.msg += "device: "+device.toString();
+            r.msg += "device: "+r.device.toString();
         }
         auto mediaJ = rootobj.value("media").toObject();
         if(mediaJ.isEmpty()){
             r.msg = "no media";
         }else{
-            Model::Media media;
-            if(!mediaJ.isEmpty()) media=Model::Media::JsonParse(mediaJ);
+            //Model::Media media;
+            if(!mediaJ.isEmpty()) r.media=Model::Media::JsonParse(mediaJ);
             if(!r.msg.isEmpty()) r.msg+='\n';
-            r.msg += "media: "+media.toString();
+            r.msg += "media: "+r.media.toString();
         }
     }
 
@@ -145,12 +145,12 @@ void DoWork::GetApiverResponse(const QUuid& guid, QByteArray s){
     QJsonObject rootobj = doc.object();
     ResponseModel::GetApiVer r(guid);
 
-    Model::ApiVer m;
+    //Model::ApiVer m;
     if(rootobj.isEmpty()){
         r.msg = "no response";
     }else{
-        m = Model::ApiVer::JsonParse(rootobj);
-        r.msg = "apiver: "+m.toString();
+        r.apiVer = Model::ApiVer::JsonParse(rootobj);
+        r.msg = "apiver: "+r.apiVer.toString();
     }
 
     emit ResponseGetApiverAction(r);
@@ -162,12 +162,12 @@ void DoWork::GetFeatureRequestResponse(const QUuid& guid, QByteArray s){
     QJsonObject rootobj = doc.object();
     ResponseModel::GetFeature r(guid);
 
-    Model::Features m;
+    //Model::Features m;
     if(rootobj.isEmpty()){
         r.msg = "no response";
     }else{
-        m = Model::Features::JsonParse(rootobj);
-        r.msg = "features: "+m.toString();
+        r.features = Model::Features::JsonParse(rootobj);
+        r.msg = "features: "+r.features.toString();
     }
 
     emit ResponseGetFeatureRequestAction(r);

@@ -11,7 +11,8 @@ namespace ViewModel
     };
 
     struct ConnectionR{
-        QString msg;
+        QString deviceMsg;
+        QString mediaMsg;
     };
 
     struct ApiverViewR{

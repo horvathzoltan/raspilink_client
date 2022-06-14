@@ -62,8 +62,33 @@ void MainPresenter::processGetConnectionAction(IMainView *sender){
 
 void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
 {
-    ViewModel::ConnectionR rm = {m.msg};
+    ViewModel::ConnectionR rm;
     if(_senders.contains(m.guid)){
+        if(_data.device.connected){
+            if(m.device.connected){
+                rm.deviceMsg="változott?";
+            } else{
+                rm.deviceMsg="lecsatlakozott";
+            }
+        }else{
+            if(m.device.connected){
+                rm.deviceMsg="felcsatlakozott";
+            }
+        }
+        if(_data.media.status!=Model::Media::Status::unknown){
+            if(m.media.status!=Model::Media::Status::unknown){
+                rm.mediaMsg="változott?";
+            } else{
+                rm.mediaMsg="nincs média";
+            }
+        } else{
+            if(m.media.status!=Model::Media::Status::unknown){
+                rm.mediaMsg="új média";
+            }
+        }
+        _data.device = m.device;
+        _data.media = m.media;
+
         _senders[m.guid]->set_ConnectionView(rm);
         _senders.remove(m.guid);
     }
@@ -76,10 +101,10 @@ void MainPresenter::processGetApiverAction(IMainView *sender){
 }
 
 void MainPresenter::onResponseGetApiverAction(ResponseModel::GetApiVer m)
-{
-    ViewModel::ApiverViewR rm = {m.msg};
+{    
     if(_senders.contains(m.guid)){
-        //Model::data.apiVer = rm;
+        _data.apiVer = m.apiVer;
+        ViewModel::ApiverViewR rm = {m.msg};
         _senders[m.guid]->set_ApiverView(rm);
         _senders.remove(m.guid);
     }
@@ -93,8 +118,10 @@ void MainPresenter::processGetFeatureRequestAction(IMainView *sender){
 
 void MainPresenter::onResponseGetFeatureRequestAction(ResponseModel::GetFeature m)
 {
-    ViewModel::FeatureRequestR rm = {m.msg};
     if(_senders.contains(m.guid)){
+        _data.features = m.features;
+
+        ViewModel::FeatureRequestR rm = {m.msg};
         _senders[m.guid]->set_FeatureRequestView(rm);
         _senders.remove(m.guid);
     }

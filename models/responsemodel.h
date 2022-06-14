@@ -13,7 +13,7 @@ namespace ResponseModel{
         Base(const QUuid _guid){
             guid = _guid;
         }
-        //QString msg;
+        QString msg;
         QUuid guid;
     };
 
