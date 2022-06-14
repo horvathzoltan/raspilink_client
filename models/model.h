@@ -5,14 +5,12 @@
 #include <QString>
 
 namespace Model
-{
-//public:
-
-    struct Apiver{
+{    
+    struct ApiVer{
         int major=0;
         int minor = 0;
 
-        static Model::Apiver JsonParse(const QJsonObject &j);
+        static Model::ApiVer JsonParse(const QJsonObject &j);
         QString toString();
     };
 
@@ -36,15 +34,22 @@ namespace Model
         QString toString();
     };
 
-    struct FeatureRequest{
+    struct Features{
         bool audio = false;
         bool call_support = false;
         QString server="";
         QString version="";
 
-        static Model::FeatureRequest JsonParse(const QJsonObject &j);
+        static Model::Features JsonParse(const QJsonObject &j);
         QString toString();
-    };
+    };    
+
+    struct Data{
+        ApiVer apiVer;
+        Features features;
+        Media media;
+        Device device;
+    } data;
 
 };
 

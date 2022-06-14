@@ -1,15 +1,15 @@
 #include "model.h"
 
 
-Model::Apiver Model::Apiver::JsonParse(const QJsonObject& j)
+Model::ApiVer Model::ApiVer::JsonParse(const QJsonObject& j)
 {
-    Model::Apiver m;
+    Model::ApiVer m;
     m.major = j.value("major").toInt(0);
     m.minor = j.value("minor").toInt(0);
     return m;
 }
 
-QString Model::Apiver::toString(){
+QString Model::ApiVer::toString(){
     return QString::number(major)+'.'+QString::number(minor);
 }
 
@@ -43,9 +43,9 @@ QString Model::Device::toString(){
     return name+" "+address+" conn:"+(connected?"yes":"no");
 }
 
-Model::FeatureRequest Model::FeatureRequest::JsonParse(const QJsonObject& j)
+Model::Features Model::Features::JsonParse(const QJsonObject& j)
 {
-    Model::FeatureRequest m;
+    Model::Features m;
     m.audio = j.value("audio").toBool(0);
     m.call_support = j.value("call-support").toBool();
 
@@ -54,7 +54,7 @@ Model::FeatureRequest Model::FeatureRequest::JsonParse(const QJsonObject& j)
     return m;
 }
 
-QString Model::FeatureRequest::toString(){
+QString Model::Features::toString(){
     QString msg = server+' '+version;
     if(audio) msg+=" audio";
     if(call_support) msg+=" callsupport";

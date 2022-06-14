@@ -1,8 +1,8 @@
 //todo
 /*
-@app.route('/apiver')
-@app.route('/feature_request')
-@app.route('/checkin')
+@app.route('/apiver') ok
+@app.route('/feature_request') ok
+@app.route('/checkin') ok
 @app.route('/calls/answer')
 @app.route('/calls/hangup')
 @app.route('/calls/hangupall')
@@ -27,3 +27,7 @@ album,artist,status,title
 
 apiver
 {"major":5,"minor":3}
+
+
+checkin ->
+ha korábban nem volt mádia, átmegyünk a média lapra

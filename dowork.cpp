@@ -145,11 +145,11 @@ void DoWork::GetApiverResponse(const QUuid& guid, QByteArray s){
     QJsonObject rootobj = doc.object();
     ResponseModel::GetApiVer r(guid);
 
-    Model::Apiver m;
+    Model::ApiVer m;
     if(rootobj.isEmpty()){
         r.msg = "no response";
     }else{
-        m = Model::Apiver::JsonParse(rootobj);
+        m = Model::ApiVer::JsonParse(rootobj);
         r.msg = "apiver: "+m.toString();
     }
 
@@ -162,11 +162,11 @@ void DoWork::GetFeatureRequestResponse(const QUuid& guid, QByteArray s){
     QJsonObject rootobj = doc.object();
     ResponseModel::GetFeature r(guid);
 
-    Model::FeatureRequest m;
+    Model::Features m;
     if(rootobj.isEmpty()){
         r.msg = "no response";
     }else{
-        m = Model::FeatureRequest::JsonParse(rootobj);
+        m = Model::Features::JsonParse(rootobj);
         r.msg = "features: "+m.toString();
     }
 

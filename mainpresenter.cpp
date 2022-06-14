@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <models/viewmodel.h>
 #include <models/responsemodel.h>
+#include <models/model.h>
 
 MainPresenter::MainPresenter(QObject *parent) :QObject(parent)
 {
@@ -78,6 +79,7 @@ void MainPresenter::onResponseGetApiverAction(ResponseModel::GetApiVer m)
 {
     ViewModel::ApiverViewR rm = {m.msg};
     if(_senders.contains(m.guid)){
+        //Model::data.apiVer = rm;
         _senders[m.guid]->set_ApiverView(rm);
         _senders.remove(m.guid);
     }
