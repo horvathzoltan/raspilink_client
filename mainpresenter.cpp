@@ -86,6 +86,11 @@ void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
                 rm.mediaMsg="új média";
             }
         }
+        // ha van calls és eddig nem volt, akkor calls lap
+        // egyébként ha van média és eddig nem volt, média
+        // egyébként státusz lap
+        // vagy adatok lap
+
         _data.device = m.device;
         _data.media = m.media;
 
