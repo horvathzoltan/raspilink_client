@@ -146,7 +146,8 @@ DoWork::State DoWork::GetState(const Model::Device &device, const Model::Media &
 
 int DoWork::GetActivePage(DoWork::State state)
 {
-    return 1;
+    if(state.callsState==State::ConnectionState::created) return Page::
+
 }
 
 void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteArray s){

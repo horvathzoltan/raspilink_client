@@ -4,7 +4,6 @@
 #include <QCoreApplication>
 #include <models/responsemodel.h>
 #include "models/commandlineargs.h"
-#include "models/viewmodel.h"
 #include "helpers/httphelper.h"
 
 
@@ -46,6 +45,8 @@ public:
 
     struct State{
         enum ConnectionState {unknown, unchanged, created, changed, deleted};
+
+        ViewModel::ConnectionR::Page page;
         ConnectionState deviceState = unknown;
         QString deviceMsg;
         ConnectionState mediaState = unknown;
