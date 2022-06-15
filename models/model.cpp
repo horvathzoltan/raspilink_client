@@ -41,7 +41,7 @@ Model::Media Model::Media::JsonParse(const QJsonObject& j)
 }
 
 QString Model::Media::toString(){
-    QString msg = status+": " + artist+": "+title;
+    QString msg = Media::StatusToString(status)+": " + artist+": "+title;
     if(!album.isEmpty()) msg+= +" ("+album+")";
     return msg;
 }
@@ -76,4 +76,15 @@ QString Model::Features::toString(){
     if(audio) msg+=" audio";
     if(call_support) msg+=" callsupport";
     return msg;
+}
+
+Model::Calls Model::Calls::JsonParse(const QJsonObject &j)
+{
+    Model::Calls m;
+    return m;
+}
+
+QString Model::Calls::toString()
+{
+    return this->msg;
 }

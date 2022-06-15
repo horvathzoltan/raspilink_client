@@ -43,6 +43,28 @@ public:
     QUuid GetMediaPause();
     QUuid GetMediaSkip();
     QUuid GetMediaBack();
+
+    struct State{
+        enum ConnectionState {unknown, unchanged, created, changed, deleted};
+        ConnectionState deviceState = unknown;
+        QString deviceMsg;
+        ConnectionState mediaState = unknown;
+        QString mediaMsg;
+        ConnectionState callsState = unknown;
+        QString callsMsg;
+    };
+
+    State GetState(const Model::Device& device,
+                      const Model::Media& media,
+                      const Model::Calls& calls
+                      );
+
+    int GetActivePage(DoWork::State state);
+
+    void setData(const Model::Device& m){_data.device = m;}
+    void setData(const Model::Media& m){_data.media = m;}
+    void setData(const Model::ApiVer& m){_data.apiVer = m;}
+    void setData(const Model::Features& m){_data.features = m;}
 private:
     bool _isInited = false;
     //CommadLineArgs params;
@@ -50,6 +72,7 @@ private:
     void GetCheckinResponse(const QUuid& guid, QByteArray s);
     void GetApiverResponse(const QUuid& guid, QByteArray s);
     void GetFeatureRequestResponse(const QUuid& guid, QByteArray s);
+    Model::Data _data;
 
 signals:
     void ResponseConnectionAction(ResponseModel::Checkin);
@@ -58,6 +81,7 @@ signals:
 
 private slots:
     void ResponseOkAction(const QUuid& guid, const QString& action, QByteArray s);
+
 };
 
 #endif // DOWORK_H

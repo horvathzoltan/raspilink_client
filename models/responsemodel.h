@@ -21,7 +21,7 @@ namespace ResponseModel{
         Checkin(const QUuid _guid):Base(_guid){};
         Model::Device device;
         Model::Media media;
-        //Model::Calls calls;
+        Model::Calls calls;
     };
 
     struct GetApiVer: public Base{

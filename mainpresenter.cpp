@@ -62,39 +62,20 @@ void MainPresenter::processGetConnectionAction(IMainView *sender){
 
 void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
 {
-    ViewModel::ConnectionR rm;
+
     if(_senders.contains(m.guid)){
-        if(_data.device.connected){
-            if(m.device.connected){
-                rm.deviceMsg="változott?";
-            } else{
-                rm.deviceMsg="lecsatlakozott";
-            }
-        }else{
-            if(m.device.connected){
-                rm.deviceMsg="felcsatlakozott";
-            }
-        }
-        if(_data.media.status!=Model::Media::Status::unknown){
-            if(m.media.status!=Model::Media::Status::unknown){
-                rm.mediaMsg="változott?";
-            } else{
-                rm.mediaMsg="nincs média";
-            }
-        } else{
-            if(m.media.status!=Model::Media::Status::unknown){
-                rm.mediaMsg="új média";
-            }
-        }
-        // ha van calls és eddig nem volt, akkor calls lap
-        // egyébként ha van média és eddig nem volt, média
-        // egyébként státusz lap
-        // vagy adatok lap
+        auto state = _dowork.GetState(m.device, m.media, m.calls);
+        int page = _dowork.GetActivePage(state);
 
-        _data.device = m.device;
-        _data.media = m.media;
+        _dowork.setData(m.device);
+        _dowork.setData(m.media);
 
-        _senders[m.guid]->set_ConnectionView(rm);
+        ViewModel::ConnectionR rm;
+        rm.callMsg=state.callsMsg;
+        rm.deviceMsg=state.deviceMsg;
+        rm.mediaMsg=state.mediaMsg;
+
+        _senders[m.guid]->set_ConnectionView(rm);                
         _senders.remove(m.guid);
     }
 }
@@ -108,7 +89,8 @@ void MainPresenter::processGetApiverAction(IMainView *sender){
 void MainPresenter::onResponseGetApiverAction(ResponseModel::GetApiVer m)
 {    
     if(_senders.contains(m.guid)){
-        _data.apiVer = m.apiVer;
+        //_data.apiVer = m.apiVer;
+        _dowork.setData(m.apiVer);
         ViewModel::ApiverViewR rm = {m.msg};
         _senders[m.guid]->set_ApiverView(rm);
         _senders.remove(m.guid);
@@ -124,7 +106,8 @@ void MainPresenter::processGetFeatureRequestAction(IMainView *sender){
 void MainPresenter::onResponseGetFeatureRequestAction(ResponseModel::GetFeature m)
 {
     if(_senders.contains(m.guid)){
-        _data.features = m.features;
+        //_data.features = m.features;
+         _dowork.setData(m.features);
 
         ViewModel::FeatureRequestR rm = {m.msg};
         _senders[m.guid]->set_FeatureRequestView(rm);

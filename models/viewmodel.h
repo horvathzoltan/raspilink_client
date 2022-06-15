@@ -11,8 +11,11 @@ namespace ViewModel
     };
 
     struct ConnectionR{
+        enum Page{main, caonnection, media, calls};
+        Page page;
         QString deviceMsg;
         QString mediaMsg;
+        QString callMsg;
     };
 
     struct ApiverViewR{

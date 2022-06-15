@@ -50,6 +50,9 @@ namespace Model
 
     struct Calls{
         QString msg;
+
+        static Model::Calls JsonParse(const QJsonObject &j);
+        QString toString();
     };
 
     struct Data{

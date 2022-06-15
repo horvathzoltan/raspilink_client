@@ -100,6 +100,55 @@ QUuid DoWork::GetMediaBack()
     return _httpHelper.SendGet(MEDIA_BACK);
 }
 
+DoWork::State DoWork::GetState(const Model::Device &device, const Model::Media &media, const Model::Calls &calls)
+{
+    State rm;
+//    if(_data.calls.connected){
+//        if(device.connected){
+//            rm.deviceMsg="változott?";
+//        } else{
+//            rm.deviceMsg="lecsatlakozott";
+//        }
+//    }else{
+//        if(device.connected){
+//            rm.deviceMsg="felcsatlakozott";
+//        }
+//    }
+    if(_data.device.connected){
+        if(device.connected){
+            rm.deviceMsg="változott?";
+            rm.deviceState = State::ConnectionState::changed;
+        } else{
+            rm.deviceMsg="lecsatlakozott";
+            rm.deviceState = State::ConnectionState::deleted;
+        }
+    }else{
+        if(device.connected){
+            rm.deviceMsg="felcsatlakozott";
+            rm.deviceState = State::ConnectionState::created;
+        }
+    }
+    if(_data.media.status!=Model::Media::Status::unknown){
+        if(media.status!=Model::Media::Status::unknown){
+            rm.mediaMsg="változott?";
+            rm.mediaState = State::ConnectionState::changed;
+        } else{
+            rm.mediaMsg="nincs média";
+            rm.mediaState = State::ConnectionState::changed;
+        }
+    } else{
+        if(media.status!=Model::Media::Status::unknown){
+            rm.mediaMsg="új média";
+        }
+    }
+    return rm;
+}
+
+int DoWork::GetActivePage(DoWork::State state)
+{
+    return 1;
+}
+
 void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteArray s){
     if(action==CHECKIN) GetCheckinResponse(guid,s);
     else if(action==APIVER) GetApiverResponse(guid,s);
@@ -120,7 +169,6 @@ void DoWork::GetCheckinResponse(const QUuid& guid, QByteArray s){
         if(deviceJ.isEmpty()){
             r.msg = "no device";
         }else{
-            //Model::Device device;
             if(!deviceJ.isEmpty()) r.device = Model::Device::JsonParse(deviceJ);
             if(!r.msg.isEmpty()) r.msg+='\n';
             r.msg += "device: "+r.device.toString();
@@ -129,10 +177,19 @@ void DoWork::GetCheckinResponse(const QUuid& guid, QByteArray s){
         if(mediaJ.isEmpty()){
             r.msg = "no media";
         }else{
-            //Model::Media media;
             if(!mediaJ.isEmpty()) r.media=Model::Media::JsonParse(mediaJ);
             if(!r.msg.isEmpty()) r.msg+='\n';
             r.msg += "media: "+r.media.toString();
+        }
+
+        auto callsJ = rootobj.value("calls").toObject();
+        if(callsJ.isEmpty()){
+            r.msg = "no calls";
+        }else{
+
+            if(!callsJ.isEmpty()) r.calls=Model::Calls::JsonParse(callsJ);
+            if(!r.msg.isEmpty()) r.msg+='\n';
+            r.msg += "calls: "+r.media.toString();
         }
     }
 
