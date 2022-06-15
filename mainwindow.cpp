@@ -55,6 +55,7 @@ void MainWindow::on_pushButton_FeatureRequest_clicked()
 
 void MainWindow::set_ConnectionView(const ViewModel::ConnectionR &m)
 {
+    if(m.page==ViewModel::Page::main) ui->tabWidget->setCurrentIndex(ui->tab_main->set);
     QString msg;
     msg = "device: "+m.deviceMsg +'\n'+"media: "+m.mediaMsg;
 
