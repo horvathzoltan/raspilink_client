@@ -46,7 +46,6 @@ public:
     struct State{
         enum ConnectionState {unknown, unchanged, created, changed, deleted};
 
-        ViewModel::ConnectionR::Page page;
         ConnectionState deviceState = unknown;
         QString deviceMsg;
         ConnectionState mediaState = unknown;
@@ -59,8 +58,6 @@ public:
                       const Model::Media& media,
                       const Model::Calls& calls
                       );
-
-    int GetActivePage(DoWork::State state);
 
     void setData(const Model::Device& m){_data.device = m;}
     void setData(const Model::Media& m){_data.media = m;}

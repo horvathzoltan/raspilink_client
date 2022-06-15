@@ -144,12 +144,6 @@ DoWork::State DoWork::GetState(const Model::Device &device, const Model::Media &
     return rm;
 }
 
-int DoWork::GetActivePage(DoWork::State state)
-{
-    if(state.callsState==State::ConnectionState::created) return Page::
-
-}
-
 void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteArray s){
     if(action==CHECKIN) GetCheckinResponse(guid,s);
     else if(action==APIVER) GetApiverResponse(guid,s);

@@ -10,8 +10,9 @@ namespace ViewModel
         QString msg;
     };
 
+    enum Page{main, connection, media, calls};
+
     struct ConnectionR{
-        enum Page{main, caonnection, media, calls};
 
         Page page;
         QString deviceMsg;

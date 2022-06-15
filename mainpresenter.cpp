@@ -60,20 +60,30 @@ void MainPresenter::processGetConnectionAction(IMainView *sender){
     _senders.insert(guid,sender);
 }
 
+
+ViewModel::Page MainPresenter::GetActivePage(DoWork::State state)
+{
+    if(state.callsState==DoWork::State::ConnectionState::created) return ViewModel::Page::calls;
+    if(state.mediaState==DoWork::State::ConnectionState::created) return ViewModel::Page::media;
+    return ViewModel::Page::connection;
+}
+
 void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
 {
 
     if(_senders.contains(m.guid)){
         auto state = _dowork.GetState(m.device, m.media, m.calls);
-        int page = _dowork.GetActivePage(state);
+        auto page = GetActivePage(state);
 
         _dowork.setData(m.device);
         _dowork.setData(m.media);
 
-        ViewModel::ConnectionR rm;
-        rm.callMsg=state.callsMsg;
-        rm.deviceMsg=state.deviceMsg;
-        rm.mediaMsg=state.mediaMsg;
+        ViewModel::ConnectionR rm {
+            .page = page,
+                    .deviceMsg=state.deviceMsg,
+                    .mediaMsg=state.mediaMsg,
+                    .callMsg=state.callsMsg
+        };
 
         _senders[m.guid]->set_ConnectionView(rm);                
         _senders.remove(m.guid);

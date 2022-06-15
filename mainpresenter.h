@@ -21,6 +21,8 @@ public:
 private:
     QList<IMainView*> _views;
 
+    ViewModel::Page GetActivePage(DoWork::State state);
+
 private slots:
     void processGetConnectionAction(IMainView *sender);
     void onResponseConnectionAction(ResponseModel::Checkin);
