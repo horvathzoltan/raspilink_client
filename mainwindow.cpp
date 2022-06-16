@@ -77,12 +77,12 @@ void MainWindow::setPage(ViewModel::Page page){
 
 void MainWindow::set_ApiverView(const ViewModel::ApiverViewR &m)
 {
-    ui->label->setText(m.msg);
+    ui->label_album->setText(m.msg);
 }
 
 void MainWindow::set_FeatureRequestView(const ViewModel::FeatureRequestR &m)
 {
-     ui->label->setText(m.msg);
+     ui->label_features->setText(m.msg);
 }
 
 
