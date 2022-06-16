@@ -98,7 +98,8 @@ void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
             .page = page,
                     .deviceMsg=state.deviceMsg,
                     .mediaMsg=state.mediaMsg,
-                    .callsMsg=state.callsMsg
+                    .callsMsg=state.callsMsg,
+
         };
 
         _senders[m.guid]->set_ConnectionView(rm);                

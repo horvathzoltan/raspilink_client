@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setPage(ViewModel::Page::main);
 }
 
 MainWindow::~MainWindow()
@@ -56,12 +57,17 @@ void MainWindow::on_pushButton_FeatureRequest_clicked()
 void MainWindow::set_ConnectionView(const ViewModel::ConnectionR &m)
 {
     setPage(m.page);
-    QString msg;
+    /*QString msg;
     msg = "device: "+m.deviceMsg+'\n'+
             "media: "+m.mediaMsg+'\n'+
-            "calls: "+m.callsMsg;
+            "calls: "+m.callsMsg;*/
 
-    ui->label_calls->setText(msg);
+    ui->label_media->setText(m.mediaMsg);
+    ui->label_device->setText(m.deviceMsg);
+    ui->label_calls->setText(m.callsMsg);
+
+    ui->label_album->setText(m.mediaMsg);
+    //ui->label_calls->setText(m.callsMsg);
 }
 
 void MainWindow::setPage(ViewModel::Page page){
@@ -77,7 +83,7 @@ void MainWindow::setPage(ViewModel::Page page){
 
 void MainWindow::set_ApiverView(const ViewModel::ApiverViewR &m)
 {
-    ui->label_album->setText(m.msg);
+    ui->label_api->setText(m.msg);
 }
 
 void MainWindow::set_FeatureRequestView(const ViewModel::FeatureRequestR &m)
