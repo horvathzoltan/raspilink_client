@@ -26,6 +26,7 @@ namespace Model
 
         static Model::Media JsonParse(const QJsonObject &j);
         QString toString();
+        bool operator==(Media m);
     };
 
     struct Device{
@@ -36,6 +37,7 @@ namespace Model
 
         static Model::Device JsonParse(const QJsonObject &j);
         QString toString();
+        bool operator==(Device m);
     };
 
     struct Features{

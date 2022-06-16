@@ -10,14 +10,24 @@ namespace ViewModel
         QString msg;
     };
 
-    enum Page{main, connection, media, calls};
+    enum Page{main, connection, media, calls, noChange};
+    static QString PageToPageName(Page page)
+    {
+        switch(page){
+        case ViewModel::Page::main: return "tab_main";
+        case ViewModel::Page::calls: return "tab_calls";
+        case ViewModel::Page::connection: return "tab_connection";
+        case ViewModel::Page::media: return "tab_media";
+        default: return{};
+        }
+    }
 
     struct ConnectionR{
 
         Page page;
         QString deviceMsg;
         QString mediaMsg;
-        QString callMsg;
+        QString callsMsg;
     };
 
     struct ApiverViewR{

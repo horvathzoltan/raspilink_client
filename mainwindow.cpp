@@ -55,11 +55,24 @@ void MainWindow::on_pushButton_FeatureRequest_clicked()
 
 void MainWindow::set_ConnectionView(const ViewModel::ConnectionR &m)
 {
-    if(m.page==ViewModel::Page::main) ui->tabWidget->setCurrentIndex(ui->tab_main->set);
+    setPage(m.page);
     QString msg;
-    msg = "device: "+m.deviceMsg +'\n'+"media: "+m.mediaMsg;
+    msg = "device: "+m.deviceMsg+'\n'+
+            "media: "+m.mediaMsg+'\n'+
+            "calls: "+m.callsMsg;
 
-    ui->label->setText(msg);
+    ui->label_calls->setText(msg);
+}
+
+void MainWindow::setPage(ViewModel::Page page){
+    if(page==ViewModel::Page::noChange) return;
+    QString pageName = ViewModel::PageToPageName(page);
+    auto p = ui->tabWidget->findChild<QWidget *>(pageName);
+    if(p==nullptr) return;
+    if(ui->tabWidget->currentWidget()==p) return;
+    int page_ix = ui->tabWidget->indexOf(p);
+    if(page_ix==-1) return;
+    ui->tabWidget->setCurrentIndex(page_ix);
 }
 
 void MainWindow::set_ApiverView(const ViewModel::ApiverViewR &m)

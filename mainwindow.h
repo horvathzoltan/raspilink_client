@@ -33,5 +33,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    void setPage(ViewModel::Page page);
+
 };
 #endif // MAINWINDOW_H

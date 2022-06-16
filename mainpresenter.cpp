@@ -63,8 +63,24 @@ void MainPresenter::processGetConnectionAction(IMainView *sender){
 
 ViewModel::Page MainPresenter::GetActivePage(DoWork::State state)
 {
-    if(state.callsState==DoWork::State::ConnectionState::created) return ViewModel::Page::calls;
-    if(state.mediaState==DoWork::State::ConnectionState::created) return ViewModel::Page::media;
+    if(state.callsState==DoWork::State::ConnectionState::created)
+        return ViewModel::Page::calls;
+    //ha amúgy van és a változott az nem megszűnés
+    if(state.callsState==DoWork::State::ConnectionState::changed)
+        return ViewModel::Page::calls;
+    //ha bejön vagy van egy hívás de elnavigálok - és nincs változás, ne menjen vissza, de ha valami változik, igen
+    if(state.callsState==DoWork::State::ConnectionState::unchanged)
+        return ViewModel::Page::noChange;
+    if(state.mediaState==DoWork::State::ConnectionState::created)
+        return ViewModel::Page::media;
+    //ha amúgy van és a változott az nem megszűnés
+    if(state.mediaState==DoWork::State::ConnectionState::changed)
+        return ViewModel::Page::noChange;
+    if(state.mediaState==DoWork::State::ConnectionState::unchanged)
+        return ViewModel::Page::noChange;
+//ha sokáig áll, vagy stopped, vagy deleted, akkor conn
+//    if(state.mediaState==DoWork::State::ConnectionState::deleted)
+//        return ViewModel::Page::connection;
     return ViewModel::Page::connection;
 }
 
@@ -82,7 +98,7 @@ void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
             .page = page,
                     .deviceMsg=state.deviceMsg,
                     .mediaMsg=state.mediaMsg,
-                    .callMsg=state.callsMsg
+                    .callsMsg=state.callsMsg
         };
 
         _senders[m.guid]->set_ConnectionView(rm);                

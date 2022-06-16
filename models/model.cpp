@@ -46,6 +46,15 @@ QString Model::Media::toString(){
     return msg;
 }
 
+bool Model::Media::operator==(Media m)
+{
+    if(this->album!=m.album) return false;
+    if(this->artist!=m.artist) return false;
+    if(this->status!=m.status) return false;
+    if(this->title!=m.title) return false;
+    return true;
+}
+
 Model::Device Model::Device::JsonParse(const QJsonObject& j)
 {
     Model::Device d;
@@ -58,6 +67,13 @@ Model::Device Model::Device::JsonParse(const QJsonObject& j)
 
 QString Model::Device::toString(){
     return name+" "+address+" conn:"+(connected?"yes":"no");
+}
+
+bool Model::Device::operator==(Device m)
+{
+    if(this->connected!=m.connected) return false;
+    if(this->address!=m.address) return false;
+    return true;
 }
 
 Model::Features Model::Features::JsonParse(const QJsonObject& j)
