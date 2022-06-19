@@ -100,9 +100,9 @@ QUuid DoWork::GetMediaBack()
     return _httpHelper.SendGet(MEDIA_BACK);
 }
 
-DoWork::State DoWork::GetState(const Model::Device &device, const Model::Media &media, const Model::Calls &calls)
+ViewModel::State DoWork::GetState(const Model::Device &device, const Model::Media &media, const Model::Calls &calls)
 {
-    State rm;
+    ViewModel::State rm;
 //    if(_data.calls.connected){
 //        if(device.connected){
 //            rm.deviceMsg="változott?";
@@ -114,50 +114,50 @@ DoWork::State DoWork::GetState(const Model::Device &device, const Model::Media &
 //            rm.deviceMsg="felcsatlakozott";
 //        }
 //    }
-    rm.callsMsg="";rm.callsState=State::ConnectionState::unknown;
+    rm.callsMsg="";rm.callsState=ViewModel::State::ConnectionState::unknown;
        if(_data.device.connected){
            if(device.connected){
                if(_data.device==device){
                    rm.deviceMsg="változatlan";
-                   rm.deviceState = State::ConnectionState::unchanged;
+                   rm.deviceState = ViewModel::State::ConnectionState::unchanged;
                } else {
                    rm.deviceMsg="változott";
-                   rm.deviceState = State::ConnectionState::changed;
+                   rm.deviceState = ViewModel::State::ConnectionState::changed;
                }
            } else{
                rm.deviceMsg="lecsatlakozott";
-               rm.deviceState = State::ConnectionState::deleted;
+               rm.deviceState = ViewModel::State::ConnectionState::deleted;
            }
        }else{
            if(device.connected){
                rm.deviceMsg="felcsatlakozott";
-               rm.deviceState = State::ConnectionState::created;
+               rm.deviceState = ViewModel::State::ConnectionState::created;
            } else{
                rm.deviceMsg="nincs device";
-               rm.deviceState = State::ConnectionState::unknown;
+               rm.deviceState = ViewModel::State::ConnectionState::unknown;
            }
        }
        if(_data.media.status!=Model::Media::Status::unknown){
            if(media.status!=Model::Media::Status::unknown){
                if(_data.media==media){
                    rm.mediaMsg="változatlan";
-                   rm.mediaState = State::ConnectionState::unchanged;
+                   rm.mediaState = ViewModel::State::ConnectionState::unchanged;
                } else{
                    rm.mediaMsg="változott";
-                   rm.mediaState = State::ConnectionState::changed;
+                   rm.mediaState = ViewModel::State::ConnectionState::changed;
                }
            } else{
                rm.mediaMsg="nincs média";
-               rm.mediaState = State::ConnectionState::deleted;
+               rm.mediaState = ViewModel::State::ConnectionState::deleted;
            }
        } else{
            if(media.status!=Model::Media::Status::unknown &&
                    (media.title.toLower()!="not provided")){
                rm.mediaMsg="új média";
-               rm.mediaState = State::ConnectionState::created;
+               rm.mediaState = ViewModel::State::ConnectionState::created;
            } else {
                rm.mediaMsg="nincs média";
-               rm.mediaState = State::ConnectionState::unknown;
+               rm.mediaState = ViewModel::State::ConnectionState::unknown;
            }
        }
        return rm;

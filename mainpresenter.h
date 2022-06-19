@@ -21,7 +21,7 @@ public:
 private:
     QList<IMainView*> _views;
 
-    ViewModel::Page GetActivePage(DoWork::State state);
+    ViewModel::Page GetActivePage(ViewModel::State state);
 
 private slots:
     void processGetConnectionAction(IMainView *sender);
@@ -31,10 +31,12 @@ private slots:
     void processGetFeatureRequestAction(IMainView *sender);
     void onResponseGetFeatureRequestAction(ResponseModel::GetFeature);
 
+    void processMediaRefreshAction(IMainView *sender);
 private:
     bool _isInited = false;
     DoWork _dowork;
     QMap<QUuid, IMainView*> _senders;
+
     //Model::Data _data;
 };
 

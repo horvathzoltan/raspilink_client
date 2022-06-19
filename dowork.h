@@ -3,6 +3,7 @@
 
 #include <QCoreApplication>
 #include <models/responsemodel.h>
+#include <models/viewmodel.h>
 #include "models/commandlineargs.h"
 #include "helpers/httphelper.h"
 
@@ -41,20 +42,9 @@ public:
     QUuid GetMediaPlay();
     QUuid GetMediaPause();
     QUuid GetMediaSkip();
-    QUuid GetMediaBack();
+    QUuid GetMediaBack();    
 
-    struct State{
-        enum ConnectionState {unknown, unchanged, created, changed, deleted};
-
-        ConnectionState deviceState = unknown;
-        QString deviceMsg;
-        ConnectionState mediaState = unknown;
-        QString mediaMsg;
-        ConnectionState callsState = unknown;
-        QString callsMsg;
-    };
-
-    State GetState(const Model::Device& device,
+    ViewModel::State GetState(const Model::Device& device,
                       const Model::Media& media,
                       const Model::Calls& calls
                       );
@@ -63,6 +53,10 @@ public:
     void setData(const Model::Media& m){_data.media = m;}
     void setData(const Model::ApiVer& m){_data.apiVer = m;}
     void setData(const Model::Features& m){_data.features = m;}
+
+    Model::Media media(){ return _data.media; }
+    Model::Device device(){ return _data.device; }
+    Model::Calls calls(){ return _data.calls; }
 private:
     bool _isInited = false;
     //CommadLineArgs params;

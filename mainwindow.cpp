@@ -8,7 +8,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->label_status_2->setText("started");
     setPage(ViewModel::Page::main);
+    timer.setParent(this);
+    QObject::connect(&timer, &QTimer::timeout, this, &MainWindow::onTimerTimeout);
+    timer.start(1000);
 }
 
 MainWindow::~MainWindow()
@@ -57,18 +61,29 @@ void MainWindow::on_pushButton_FeatureRequest_clicked()
 void MainWindow::set_ConnectionView(const ViewModel::ConnectionR &m)
 {
     setPage(m.page);
-    /*QString msg;
-    msg = "device: "+m.deviceMsg+'\n'+
-            "media: "+m.mediaMsg+'\n'+
-            "calls: "+m.callsMsg;*/
 
-    ui->label_media->setText(m.mediaMsg);
-    ui->label_device->setText(m.deviceMsg);
-    ui->label_calls->setText(m.callsMsg);
+    ui->label_media->setText(m.state.mediaMsg);
+    ui->label_device->setText(m.state.deviceMsg);
+    ui->label_calls->setText(m.state.callsMsg);
 
-    ui->label_album->setText(m.mediaMsg);
-    //ui->label_calls->setText(m.callsMsg);
+    if(IsRefresh(m.state.mediaState)){
+        emit MediaRefreshActionTriggered(this);
+    }
+    if(IsRefresh(m.state.deviceState)){
+        emit DeviceRefreshActionTriggered(this);
+    }
+    if(IsRefresh(m.state.callsState)){
+        emit CallsRefreshActionTriggered(this);
+    }
 }
+
+bool MainWindow::IsRefresh(ViewModel::State::ConnectionState s){
+    if(s==ViewModel::State::ConnectionState::changed) return true;
+    if(s==ViewModel::State::ConnectionState::created) return true;
+    if(s==ViewModel::State::ConnectionState::deleted) return true;
+    return false;
+}
+
 
 void MainWindow::setPage(ViewModel::Page page){
     if(page==ViewModel::Page::noChange) return;
@@ -88,11 +103,23 @@ void MainWindow::set_ApiverView(const ViewModel::ApiverViewR &m)
 
 void MainWindow::set_FeatureRequestView(const ViewModel::FeatureRequestR &m)
 {
-     ui->label_features->setText(m.msg);
+    ui->label_features->setText(m.msg);
 }
 
 
+void MainWindow::onTimerTimeout()
+{
+    emit GetConnectionActionTriggered(this);
+    ui->label_status_2->setText("tick: "+QString::number(tick));
+    tick++;
+}
 
-
-
+/*set media*/
+void MainWindow::set_MediaView(const ViewModel::Media &m)
+{
+    ui->label_album->setText(m.media.album);
+    ui->label_artist->setText(m.media.artist);
+    ui->label_title->setText(m.media.title);
+    ui->label_status->setText(Model::Media::StatusToString(m.media.status));
+}
 

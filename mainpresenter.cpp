@@ -29,7 +29,10 @@ void MainPresenter::appendView(IMainView *w)
 
     QObject::connect(view_obj, SIGNAL(GetFeatureRequestActionTriggered(IMainView*)),
                      this, SLOT(processGetFeatureRequestAction(IMainView*)));
-    //refreshView(w);
+
+    QObject::connect(view_obj, SIGNAL(MediaRefreshActionTriggered(IMainView*)),
+                     this, SLOT(processMediaRefreshAction(IMainView*)));
+    //refreshView(w);    
 }
 
 
@@ -61,22 +64,22 @@ void MainPresenter::processGetConnectionAction(IMainView *sender){
 }
 
 
-ViewModel::Page MainPresenter::GetActivePage(DoWork::State state)
+ViewModel::Page MainPresenter::GetActivePage(ViewModel::State state)
 {
-    if(state.callsState==DoWork::State::ConnectionState::created)
+    if(state.callsState==ViewModel::State::ConnectionState::created)
         return ViewModel::Page::calls;
     //ha amúgy van és a változott az nem megszűnés
-    if(state.callsState==DoWork::State::ConnectionState::changed)
+    if(state.callsState==ViewModel::State::ConnectionState::changed)
         return ViewModel::Page::calls;
     //ha bejön vagy van egy hívás de elnavigálok - és nincs változás, ne menjen vissza, de ha valami változik, igen
-    if(state.callsState==DoWork::State::ConnectionState::unchanged)
+    if(state.callsState==ViewModel::State::ConnectionState::unchanged)
         return ViewModel::Page::noChange;
-    if(state.mediaState==DoWork::State::ConnectionState::created)
+    if(state.mediaState==ViewModel::State::ConnectionState::created)
         return ViewModel::Page::media;
     //ha amúgy van és a változott az nem megszűnés
-    if(state.mediaState==DoWork::State::ConnectionState::changed)
+    if(state.mediaState==ViewModel::State::ConnectionState::changed)
         return ViewModel::Page::noChange;
-    if(state.mediaState==DoWork::State::ConnectionState::unchanged)
+    if(state.mediaState==ViewModel::State::ConnectionState::unchanged)
         return ViewModel::Page::noChange;
 //ha sokáig áll, vagy stopped, vagy deleted, akkor conn
 //    if(state.mediaState==DoWork::State::ConnectionState::deleted)
@@ -96,11 +99,12 @@ void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
 
         ViewModel::ConnectionR rm {
             .page = page,
-                    .deviceMsg=state.deviceMsg,
-                    .mediaMsg=state.mediaMsg,
-                    .callsMsg=state.callsMsg,
+                    .state = state
+//                    .deviceMsg=state.deviceMsg,
+//                    .mediaMsg=state.mediaMsg,
+//                    .callsMsg=state.callsMsg,
 
-        };
+        };        
 
         _senders[m.guid]->set_ConnectionView(rm);                
         _senders.remove(m.guid);
@@ -141,3 +145,13 @@ void MainPresenter::onResponseGetFeatureRequestAction(ResponseModel::GetFeature 
         _senders.remove(m.guid);
     }
 }
+
+void MainPresenter::processMediaRefreshAction(IMainView *sender)
+{
+    Model::Media m = _dowork.media();
+    ViewModel::Media rm{
+        .media = m
+    };
+    sender->set_MediaView(rm);
+}
+
