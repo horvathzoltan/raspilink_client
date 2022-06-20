@@ -39,3 +39,10 @@ apiver
 
 checkin ->
 ha korábban nem volt mádia, átmegyünk a média lapra
+
+// main:óra, időjárás, hőfok város, tartózkodási hely, külső/belső hőfok mért
+// ajtók állapota, ablakok állapota, zárak állapota, szürkület naptár szerint/mért fényérték
+// sebességfokozat, fordulat, sebesség
+// kamera
+// net rádió
+// helyi média
