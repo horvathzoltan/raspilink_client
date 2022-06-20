@@ -19,31 +19,33 @@ public:
     ~MainWindow();
 
     void set_ConnectionView(const ViewModel::ConnectionR& m);
-    void set_ApiverView(const ViewModel::ApiverViewR& m);
-    void set_FeatureRequestView(const ViewModel::FeatureRequestR& m);
-
+    void set_ApiverView(const ViewModel::Apiver& m);
+    void set_FeatureRequestView(const ViewModel::Features& m);
     void set_MediaView(const ViewModel::Media& m);
+    void set_DeviceView(const ViewModel::Device& m);
+    void set_CallsView(const ViewModel::Calls& m);
+    void set_DateTime();
+    void set_CurrentWeatherView(const ViewModel::CurrentWeather& m);
 
 signals:
     void GetConnectionActionTriggered(IMainView *sender);
     void GetApiverActionTriggered(IMainView *sender);
     void GetFeatureRequestActionTriggered(IMainView *sender);
-
     void MediaRefreshActionTriggered(IMainView *sender);
     void DeviceRefreshActionTriggered(IMainView *sender);
     void CallsRefreshActionTriggered(IMainView *sender);
+    void GetCurrentWeatherActionTriggered(IMainView *sender);
 
 private slots:
-    void on_pushButton_connection_clicked();
-    void on_pushButton_getApiver_clicked();
-    void on_pushButton_FeatureRequest_clicked();
     void onTimerTimeout();
 
 private:
     Ui::MainWindow *ui;
+    QTimer _timer;
+    unsigned long int _tick=0;
+    QLocale _locale;//("hu-HU");
+
     void setPage(ViewModel::Page page);
-    QTimer timer;
-    int tick=0;
     bool IsRefresh(ViewModel::State::ConnectionState s);
 };
 #endif // MAINWINDOW_H

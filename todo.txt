@@ -40,9 +40,78 @@ apiver
 checkin ->
 ha korábban nem volt mádia, átmegyünk a média lapra
 
-// main:óra, időjárás, hőfok város, tartózkodási hely, külső/belső hőfok mért
+// main:óra, hőfok város, tartózkodási hely, külső/belső hőfok mért
 // ajtók állapota, ablakok állapota, zárak állapota, szürkület naptár szerint/mért fényérték
 // sebességfokozat, fordulat, sebesség
 // kamera
 // net rádió
 // helyi média
+// időjárás riasztás
+
+https://www.idokep.hu/assets/forecast-icons/022.svg
+http://beepulo.idokep.hu/futar/Debrecen
+https://www.idokep.hu/kistersegi/riaszt_1-3_transp.png
+https://met.hu/idojaras/veszelyjelzes/index.php
+
+Zivatar
+view-source:https://met.hu/images/warningb/ts.gif
+Széllökés
+view-source:https://met.hu/images/warningb/wind.gif
+Felhőszakadás
+view-source:https://met.hu/images/warningb/rainstorm.gif
+Ónos eső
+view-source:https://met.hu/images/warningb/fzra.gif
+Hófúvás
+view-source:https://met.hu/images/warningb/snowdrift.gif
+
+Zalaegerszegi járás
+view-source:https://met.hu//idojaras/veszelyjelzes/hover.php?id=wahx&kod=2005
+
+
+teljes riasztás oldal: nagy térkép
+https://met.hu/idojaras/veszelyjelzes/index.php?kt=2005
+***riasztáslista:
+<div class='wico_menu'>
+***térkép
+<div class='warnslide innerfade' id='sliderwarnbig'><div class='warncont'><img usemap='#kistersegek' name='kistersegek'
+src='/img/warning/waxX/20220620_1900//wata20220620_1900+ts.png' border=0 width=640></div></div><script type='text/javascript'>
+
+view-source:https://met.hu/img/warning/waxX/20220620_1900//wata20220620_1900+ts.png
+
+view-source:https://met.hu/images/warningb/w0.gif
+view-source:https://met.hu/images/warningb/w1.gif
+view-source:https://met.hu/images/warningb/w2.gif
+view-source:https://met.hu/images/warningb/w3.gif
+
+
+időkép:
+view-source:https://www.idokep.hu/idojaras/Debrecen
+<!-- location and temperature -->
+
+current-weather-short-desc Hidegfront hoz 5-6 fokos lehűlést
+current-weather-title Jelenleg
+current-weather Derült
+current-weather-icon /assets/forecast-icons/310.svg
+current-temperature
+
+<div><img src="/assets/icons/sunrise.svg" loading="lazy"
+                                          class="ik small-icon">Napkelte 4:35</div>
+                                <div class="pt-2"><img src="/assets/icons/sunset.svg" loading="lazy"
+                                                       class="ik small-icon">Napnyugta 20:34
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+    connect(nam, &QNetworkAccessManager::finished, this, &MainWindow::downloadFinished);
+    const QUrl url = QUrl("http://computer/a.jpg");
+    QNetworkRequest request(url);
+    nam->get(request);
+}
+
+void MainWindow::downloadFinished(QNetworkReply *reply)
+{
+    QPixmap pm;
+    pm.loadFromData(reply->readAll());
+    ui->label->setPixmap(pm);
+}

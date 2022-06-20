@@ -8,10 +8,6 @@
 
 namespace ViewModel
 {
-    struct FeatureRequestR{
-        QString msg;
-    };
-
     enum Page{main, connection, media, calls, noChange};
     static QString PageToPageName(Page page)
     {
@@ -38,13 +34,14 @@ namespace ViewModel
     struct ConnectionR{
         Page page;
         State state;
-        //QString deviceMsg;
-        //QString mediaMsg;
-        //QString callsMsg;
     };
 
-    struct ApiverViewR{
-        QString msg;
+    struct Apiver{
+        Model::ApiVer apiver;
+    };
+
+    struct Features{
+        Model::Features features;
     };
 
     struct Media{
@@ -57,6 +54,10 @@ namespace ViewModel
 
     struct Calls{
         Model::Calls calls;
+    };
+
+    struct CurrentWeather{
+        Model::CurrentWeather currentWeather;
     };
 };
 

@@ -32,6 +32,11 @@ private slots:
     void onResponseGetFeatureRequestAction(ResponseModel::GetFeature);
 
     void processMediaRefreshAction(IMainView *sender);
+    void processDeviceRefreshAction(IMainView *sender);
+    void processCallsRefreshAction(IMainView *sender);
+    void processGetCurrentWeatherAction(IMainView *sender);
+    void onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather);
+
 private:
     bool _isInited = false;
     DoWork _dowork;

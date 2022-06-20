@@ -25,6 +25,9 @@ const QString DoWork::MEDIA_PAUSE = QStringLiteral("/media/pause");
 const QString DoWork::MEDIA_SKIP = QStringLiteral("/media/skip");
 const QString DoWork::MEDIA_BACK = QStringLiteral("/media/back");
 
+const QString DoWork::CURRENTWEATHER = QStringLiteral("apiver/k");
+
+
 DoWork::DoWork(QObject *parent) :QObject(parent)
 {
 
@@ -167,6 +170,8 @@ void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteAr
     if(action==CHECKIN) GetCheckinResponse(guid,s);
     else if(action==APIVER) GetApiverResponse(guid,s);
     else if(action==FEATURE_REQUEST) GetFeatureRequestResponse(guid,s);
+    else if(action==CURRENTWEATHER)
+        GetCurrentWeatherResponse(guid,s);
     else zInfo("unknown action: "+action);
 }
 
@@ -242,4 +247,30 @@ void DoWork::GetFeatureRequestResponse(const QUuid& guid, QByteArray s){
     }
 
     emit ResponseGetFeatureRequestAction(r);
+}
+
+/*weather*/
+
+QUuid DoWork::GetCurrentWeather()
+{
+    return _httpHelper.SendGet(CURRENTWEATHER);
+}
+
+void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
+    //QJsonParseError errorPtr;
+    //QJsonDocument doc = QJsonDocument::fromJson(s, &errorPtr);
+    //QJsonObject rootobj = doc.object();
+    ResponseModel::GetCurrentWeather r(guid);
+
+    //Model::ApiVer m;
+    //if(rootobj.isEmpty()){
+    //    r.msg = "no response";
+    //}else{
+        //r.currentWeather = Model::CurrentWeather::JsonParse(rootobj);
+        //r.msg = "currentWeather: "+r.currentWeather.toString();
+        r.currentWeather = {"hutty"};
+        r.msg = "hutty2";
+    //}
+
+    emit ResponseGetCurrentWeatherRequestAction(r);
 }

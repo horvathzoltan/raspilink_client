@@ -11,7 +11,7 @@ namespace Model
         int minor = 0;
 
         static Model::ApiVer JsonParse(const QJsonObject &j);
-        QString toString();
+        QString toString() const;
     };
 
     struct Media{
@@ -36,7 +36,7 @@ namespace Model
         int signal_strength=-1;
 
         static Model::Device JsonParse(const QJsonObject &j);
-        QString toString();
+        QString toString() const;
         bool operator==(Device m);
     };
 
@@ -47,7 +47,9 @@ namespace Model
         QString version="";
 
         static Model::Features JsonParse(const QJsonObject &j);
-        QString toString();
+        QString toString() const;
+        QString toServerString() const;
+        QString toFeatureString() const;
     };    
 
     struct Calls{
@@ -57,13 +59,18 @@ namespace Model
         QString toString();
     };
 
+    struct CurrentWeather{
+        QString msg;
+    };
+
     struct Data{
         ApiVer apiVer;
         Features features;
         Media media;
         Device device;
         Calls calls;
-    };
+        CurrentWeather currentWeather;
+    };       
 };
 
 #endif // MODELS_H

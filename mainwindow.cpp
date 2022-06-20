@@ -10,9 +10,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->label_status_2->setText("started");
     setPage(ViewModel::Page::main);
-    timer.setParent(this);
-    QObject::connect(&timer, &QTimer::timeout, this, &MainWindow::onTimerTimeout);
-    timer.start(1000);
+    _timer.setParent(this);
+    QObject::connect(&_timer, &QTimer::timeout, this, &MainWindow::onTimerTimeout);
+    _timer.start(1000);
 }
 
 MainWindow::~MainWindow()
@@ -21,25 +21,7 @@ MainWindow::~MainWindow()
 }
 
 /*UserActions*/
-//void MainWindow::on_pushButton_clicked()
-//{
-//    emit PushButtonActionTriggered(this);
-//}
 
-void MainWindow::on_pushButton_connection_clicked()
-{
-    emit GetConnectionActionTriggered(this);
-}
-
-void MainWindow::on_pushButton_getApiver_clicked()
-{
-    emit GetApiverActionTriggered(this);
-}
-
-void MainWindow::on_pushButton_FeatureRequest_clicked()
-{
-    emit GetFeatureRequestActionTriggered(this);
-}
 
 /*GetViewModel*/
 //auto MainWindow::get_DoWorkModel() -> ViewModel::DoWorkModel
@@ -84,7 +66,6 @@ bool MainWindow::IsRefresh(ViewModel::State::ConnectionState s){
     return false;
 }
 
-
 void MainWindow::setPage(ViewModel::Page page){
     if(page==ViewModel::Page::noChange) return;
     QString pageName = ViewModel::PageToPageName(page);
@@ -96,22 +77,36 @@ void MainWindow::setPage(ViewModel::Page page){
     ui->tabWidget->setCurrentIndex(page_ix);
 }
 
-void MainWindow::set_ApiverView(const ViewModel::ApiverViewR &m)
+void MainWindow::set_ApiverView(const ViewModel::Apiver &m)
 {
-    ui->label_api->setText(m.msg);
+    QString msg2 = m.apiver.toString();
+    ui->label_api->setText(msg2);
 }
 
-void MainWindow::set_FeatureRequestView(const ViewModel::FeatureRequestR &m)
+void MainWindow::set_FeatureRequestView(const ViewModel::Features &m)
 {
-    ui->label_features->setText(m.msg);
+    QString serverString = m.features.toServerString();
+    ui->label_server->setText(serverString);
+
+    QString featureString = m.features.toFeatureString();
+    ui->label_features->setText(featureString);
 }
 
 
 void MainWindow::onTimerTimeout()
 {
+    if(_tick==0){
+        emit GetApiverActionTriggered(this);
+        emit GetFeatureRequestActionTriggered(this);
+        emit GetCurrentWeatherActionTriggered(this);
+    }
+
     emit GetConnectionActionTriggered(this);
-    ui->label_status_2->setText("tick: "+QString::number(tick));
-    tick++;
+    ui->label_status_2->setText("tick: "+QString::number(_tick));
+
+    _tick++;
+
+    set_DateTime();
 }
 
 /*set media*/
@@ -123,3 +118,26 @@ void MainWindow::set_MediaView(const ViewModel::Media &m)
     ui->label_status->setText(Model::Media::StatusToString(m.media.status));
 }
 
+void MainWindow::set_DeviceView(const ViewModel::Device &m)
+{
+    QString msg = m.device.toString();
+    ui->label_connected->setText(msg);
+}
+
+void MainWindow::set_CallsView(const ViewModel::Calls &m)
+{
+    ui->label_device->setText(m.calls.msg);
+}
+
+void MainWindow::set_DateTime()
+{
+    auto t = QDateTime::currentDateTime();
+    QString msg = _locale.toString(t);
+    ui->label_datetime->setText(msg);
+}
+
+void MainWindow::set_CurrentWeatherView(const ViewModel::CurrentWeather &m)
+{
+    QString msg2 = m.currentWeather.msg;
+    ui->label_img->setText("currentWeather:"+msg2);
+}

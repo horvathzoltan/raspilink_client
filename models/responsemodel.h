@@ -33,5 +33,11 @@ namespace ResponseModel{
         GetFeature(const QUuid _guid):Base(_guid){};
         Model::Features features;
     };
+
+    struct GetCurrentWeather: public Base{
+        GetCurrentWeather(const QUuid _guid):Base(_guid){};
+        Model::CurrentWeather currentWeather;
+    };
+
 };
 #endif // RESPONSEMODEL_H

@@ -9,7 +9,8 @@ Model::ApiVer Model::ApiVer::JsonParse(const QJsonObject& j)
     return m;
 }
 
-QString Model::ApiVer::toString(){
+QString Model::ApiVer::toString() const
+{
     return QString::number(major)+'.'+QString::number(minor);
 }
 
@@ -65,7 +66,8 @@ Model::Device Model::Device::JsonParse(const QJsonObject& j)
     return d;
 }
 
-QString Model::Device::toString(){
+QString Model::Device::toString() const
+{
     return name+" "+address+" conn:"+(connected?"yes":"no");
 }
 
@@ -87,10 +89,29 @@ Model::Features Model::Features::JsonParse(const QJsonObject& j)
     return m;
 }
 
-QString Model::Features::toString(){
+QString Model::Features::toServerString() const
+{
     QString msg = server+' '+version;
-    if(audio) msg+=" audio";
-    if(call_support) msg+=" callsupport";
+    return msg;
+}
+
+QString Model::Features::toFeatureString() const
+{
+    QString msg;
+    if(audio) msg+="audio";
+    if(call_support){
+        if(!msg.isEmpty()) msg+=' ';
+        msg+="callsupport";
+    }
+    return msg;
+}
+
+QString Model::Features::toString() const
+{
+//    QString msg = server+' '+version;
+//    if(audio) msg+=" audio";
+//    if(call_support) msg+=" callsupport";
+    QString msg = this->toServerString()+' '+this->toFeatureString();
     return msg;
 }
 

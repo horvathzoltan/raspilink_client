@@ -32,6 +32,15 @@ void MainPresenter::appendView(IMainView *w)
 
     QObject::connect(view_obj, SIGNAL(MediaRefreshActionTriggered(IMainView*)),
                      this, SLOT(processMediaRefreshAction(IMainView*)));
+
+    QObject::connect(view_obj, SIGNAL(DeviceRefreshActionTriggered(IMainView*)),
+                     this, SLOT(processDeviceRefreshAction(IMainView*)));
+
+    QObject::connect(view_obj, SIGNAL(CallsRefreshActionTriggered(IMainView*)),
+                     this, SLOT(processCallsRefreshAction(IMainView*)));
+
+    QObject::connect(view_obj, SIGNAL(GetCurrentWeatherActionTriggered(IMainView*)),
+                     this, SLOT(processGetCurrentWeatherAction(IMainView*)));
     //refreshView(w);    
 }
 
@@ -46,6 +55,8 @@ auto MainPresenter::init(const QString& host, int port) -> bool
             this,SLOT(onResponseGetApiverAction(ResponseModel::GetApiVer)));
     connect(&_dowork,SIGNAL(ResponseGetFeatureRequestAction(ResponseModel::GetFeature)),
             this,SLOT(onResponseGetFeatureRequestAction(ResponseModel::GetFeature)));
+    connect(&_dowork,SIGNAL(ResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather)),
+            this,SLOT(onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather)));
 
     //_result = { Result::State::NotCalculated, -1};
     _isInited = true;
@@ -71,20 +82,29 @@ ViewModel::Page MainPresenter::GetActivePage(ViewModel::State state)
     //ha amúgy van és a változott az nem megszűnés
     if(state.callsState==ViewModel::State::ConnectionState::changed)
         return ViewModel::Page::calls;
+//    if(state.callsState==ViewModel::State::ConnectionState::deleted)
+//        return ViewModel::Page::noChange;
     //ha bejön vagy van egy hívás de elnavigálok - és nincs változás, ne menjen vissza, de ha valami változik, igen
     if(state.callsState==ViewModel::State::ConnectionState::unchanged)
         return ViewModel::Page::noChange;
     if(state.mediaState==ViewModel::State::ConnectionState::created)
         return ViewModel::Page::media;
     //ha amúgy van és a változott az nem megszűnés
-    if(state.mediaState==ViewModel::State::ConnectionState::changed)
+    // és nem paused, akkor
+    if(state.mediaState==ViewModel::State::ConnectionState::changed){
+        //    return ViewModel::Page::media;
+        auto s = _dowork.media().status;
+        if(s==Model::Media::Status::playing) return ViewModel::Page::media;
         return ViewModel::Page::noChange;
+    }
+
+
     if(state.mediaState==ViewModel::State::ConnectionState::unchanged)
         return ViewModel::Page::noChange;
 //ha sokáig áll, vagy stopped, vagy deleted, akkor conn
 //    if(state.mediaState==DoWork::State::ConnectionState::deleted)
 //        return ViewModel::Page::connection;
-    return ViewModel::Page::connection;
+    return ViewModel::Page::noChange;
 }
 
 void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
@@ -92,20 +112,13 @@ void MainPresenter::onResponseConnectionAction(ResponseModel::Checkin m)
 
     if(_senders.contains(m.guid)){
         auto state = _dowork.GetState(m.device, m.media, m.calls);
-        auto page = GetActivePage(state);
 
         _dowork.setData(m.device);
         _dowork.setData(m.media);
 
-        ViewModel::ConnectionR rm {
-            .page = page,
-                    .state = state
-//                    .deviceMsg=state.deviceMsg,
-//                    .mediaMsg=state.mediaMsg,
-//                    .callsMsg=state.callsMsg,
+        auto page = GetActivePage(state);
 
-        };        
-
+        ViewModel::ConnectionR rm {.page = page, .state = state};
         _senders[m.guid]->set_ConnectionView(rm);                
         _senders.remove(m.guid);
     }
@@ -122,7 +135,7 @@ void MainPresenter::onResponseGetApiverAction(ResponseModel::GetApiVer m)
     if(_senders.contains(m.guid)){
         //_data.apiVer = m.apiVer;
         _dowork.setData(m.apiVer);
-        ViewModel::ApiverViewR rm = {m.msg};
+        ViewModel::Apiver rm = {m.apiVer};
         _senders[m.guid]->set_ApiverView(rm);
         _senders.remove(m.guid);
     }
@@ -140,7 +153,7 @@ void MainPresenter::onResponseGetFeatureRequestAction(ResponseModel::GetFeature 
         //_data.features = m.features;
          _dowork.setData(m.features);
 
-        ViewModel::FeatureRequestR rm = {m.msg};
+        ViewModel::Features rm = {m.features};
         _senders[m.guid]->set_FeatureRequestView(rm);
         _senders.remove(m.guid);
     }
@@ -155,3 +168,38 @@ void MainPresenter::processMediaRefreshAction(IMainView *sender)
     sender->set_MediaView(rm);
 }
 
+void MainPresenter::processDeviceRefreshAction(IMainView *sender)
+{
+    Model::Device m = _dowork.device();
+    ViewModel::Device rm{
+        .device = m
+    };
+    sender->set_DeviceView(rm);
+}
+
+void MainPresenter::processCallsRefreshAction(IMainView *sender)
+{
+    Model::Calls m = _dowork.calls();
+    ViewModel::Calls rm{
+        .calls = m
+    };
+    sender->set_CallsView(rm);
+}
+
+/*weather*/
+
+void MainPresenter::processGetCurrentWeatherAction(IMainView *sender){
+    auto guid = _dowork.GetCurrentWeather();
+    _senders.insert(guid,sender);
+}
+
+void MainPresenter::onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather m)
+{
+    if(_senders.contains(m.guid)){
+        //_data.apiVer = m.apiVer;
+        _dowork.setData(m.currentWeather);
+        ViewModel::CurrentWeather rm = {m.currentWeather};
+        _senders[m.guid]->set_CurrentWeatherView(rm);
+        _senders.remove(m.guid);
+    }
+}
