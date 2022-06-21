@@ -16,11 +16,16 @@ HttpHelper::HttpHelper(QObject *parent)
 bool HttpHelper::init(const QString& host, int port)
 {
     _inited = false;
-    if(port<0||port>65535) return _inited;
-    _url = QUrl();
-    _url.setScheme("http");
-    _url.setHost(host);
-    _url.setPort(port);
+
+    if(host.startsWith("http")){
+        _url = QUrl(host);
+    }else{
+        _url = QUrl();
+        _url.setScheme("http");
+        _url.setHost(host);
+    }
+
+    if(port>=0&&port<=65535) _url.setPort(port);
     if(!_url.isValid()) return _inited;
     _inited = true;
     return _inited;
@@ -28,7 +33,7 @@ bool HttpHelper::init(const QString& host, int port)
 
 QUuid HttpHelper::SendGet(const QString& action)
 {
-    _url.setPath((action.startsWith('/')?action:'/'+action));
+    if(!action.startsWith('#')) _url.setPath((action.startsWith('/')?action:'/'+action));
     QNetworkAccessManager * mgr = new QNetworkAccessManager(this);
 
     auto guid = QUuid::createUuid();
@@ -104,8 +109,18 @@ void HttpHelper::onFinish(QNetworkReply *rep)
             auto guid = zShortGuid::Decode(keyString);
             auto action = _actions[guid];
             _actions.remove(guid);
-            zInfo("reply: "+b);
-            emit ResponseOk(guid, action, b);
+            if(b.isEmpty())
+            {
+                QString msg = "no reply";
+                if(!err.isEmpty()) msg+=" err: " + err;
+                msg+=" url: " + url.toDisplayString();
+                zInfo(msg);
+                //emit ResponseErr(guid, action, b);
+            }
+            else{
+                zInfo("reply: "+(b.count()>20?b.mid(0,20)+"...":b));
+                emit ResponseOk(guid, action, b);
+            }
         }
     }
 }

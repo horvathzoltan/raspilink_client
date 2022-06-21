@@ -51,6 +51,9 @@ Settings Settings::Load(const QString& dir)
     s.host=q.value("host").toString();
     s.port=q.value("port").toInt();
 
+    s.host_idokep=q.value("host_idokep").toString();
+    s.host_met=q.value("host_met").toString();
+
     return s;
 }
 

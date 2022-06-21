@@ -3,6 +3,7 @@
 
 #include <QCoreApplication>
 #include <models/responsemodel.h>
+#include <models/settings.h>
 #include <models/viewmodel.h>
 #include "models/commandlineargs.h"
 #include "helpers/httphelper.h"
@@ -31,7 +32,11 @@ private:
 public:
     explicit DoWork(QObject *parent = nullptr);   
 
-    bool init(const QString& host, int port);
+    struct DoWorkInit{
+        Settings settings;
+    };
+
+    bool init(const DoWorkInit& m);
     QUuid GetCheckin();
     QUuid GetApiver();
     QUuid GetFeatureRequest();
@@ -70,6 +75,9 @@ private:
     bool _isInited = false;
     //CommadLineArgs params;
     HttpHelper _httpHelper;
+    HttpHelper _httpHelper_idokep;
+    HttpHelper _httpHelper_met;
+
     void GetCheckinResponse(const QUuid& guid, QByteArray s);
     void GetApiverResponse(const QUuid& guid, QByteArray s);
     void GetFeatureRequestResponse(const QUuid& guid, QByteArray s);

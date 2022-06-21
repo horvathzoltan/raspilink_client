@@ -25,7 +25,7 @@ const QString DoWork::MEDIA_PAUSE = QStringLiteral("/media/pause");
 const QString DoWork::MEDIA_SKIP = QStringLiteral("/media/skip");
 const QString DoWork::MEDIA_BACK = QStringLiteral("/media/back");
 
-const QString DoWork::CURRENTWEATHER = QStringLiteral("apiver/k");
+const QString DoWork::CURRENTWEATHER = QStringLiteral("#CURRENTWEATHER");
 
 
 DoWork::DoWork(QObject *parent) :QObject(parent)
@@ -33,16 +33,21 @@ DoWork::DoWork(QObject *parent) :QObject(parent)
 
 }
 
-auto DoWork::init(const QString& host, int port) -> bool
+auto DoWork::init(const DoWorkInit& m) -> bool
 {
     _isInited = false;
 
-    if(!_httpHelper.init(host, port)) return _isInited;
-    //params = p;
+    if(!_httpHelper.init(m.settings.host, m.settings.port)) return _isInited;
+    if(!_httpHelper_idokep.init(m.settings.host_idokep, -1)) return _isInited;
+    if(!_httpHelper_met.init(m.settings.host_met, -1)) return _isInited;
 
-    //_result = { Result::State::NotCalculated, -1};
     QObject::connect(&_httpHelper, SIGNAL(ResponseOk(const QUuid&, const QString&, QByteArray)),
                      this, SLOT(ResponseOkAction(const QUuid&, const QString&, QByteArray)));
+    QObject::connect(&_httpHelper_idokep, SIGNAL(ResponseOk(const QUuid&, const QString&, QByteArray)),
+                     this, SLOT(ResponseOkAction(const QUuid&, const QString&, QByteArray)));
+    QObject::connect(&_httpHelper_met, SIGNAL(ResponseOk(const QUuid&, const QString&, QByteArray)),
+                     this, SLOT(ResponseOkAction(const QUuid&, const QString&, QByteArray)));
+
 
     _isInited = true;
     return true;
@@ -253,13 +258,14 @@ void DoWork::GetFeatureRequestResponse(const QUuid& guid, QByteArray s){
 
 QUuid DoWork::GetCurrentWeather()
 {
-    return _httpHelper.SendGet(CURRENTWEATHER);
+    return _httpHelper_idokep.SendGet(CURRENTWEATHER);
 }
 
 void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
     //QJsonParseError errorPtr;
     //QJsonDocument doc = QJsonDocument::fromJson(s, &errorPtr);
     //QJsonObject rootobj = doc.object();
+    QString txt(s);
     ResponseModel::GetCurrentWeather r(guid);
 
     //Model::ApiVer m;
@@ -268,7 +274,7 @@ void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
     //}else{
         //r.currentWeather = Model::CurrentWeather::JsonParse(rootobj);
         //r.msg = "currentWeather: "+r.currentWeather.toString();
-        r.currentWeather = {"hutty"};
+        r.currentWeather = {.shortDesc = txt.mid(0, 20)};
         r.msg = "hutty2";
     //}
 

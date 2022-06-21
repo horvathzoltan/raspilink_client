@@ -40,13 +40,13 @@ apiver
 checkin ->
 ha korábban nem volt mádia, átmegyünk a média lapra
 
-// main:óra, hőfok város, tartózkodási hely, külső/belső hőfok mért
+// main:óra, tartózkodási hely(város,kistérség ), külső/belső hőfok mért/api
 // ajtók állapota, ablakok állapota, zárak állapota, szürkület naptár szerint/mért fényérték
 // sebességfokozat, fordulat, sebesség
 // kamera
 // net rádió
 // helyi média
-// időjárás riasztás
+// időjárás jelenlegi, riasztások
 
 https://www.idokep.hu/assets/forecast-icons/022.svg
 http://beepulo.idokep.hu/futar/Debrecen
@@ -83,7 +83,6 @@ view-source:https://met.hu/images/warningb/w1.gif
 view-source:https://met.hu/images/warningb/w2.gif
 view-source:https://met.hu/images/warningb/w3.gif
 
-
 időkép:
 view-source:https://www.idokep.hu/idojaras/Debrecen
 <!-- location and temperature -->
@@ -94,11 +93,8 @@ current-weather Derült
 current-weather-icon /assets/forecast-icons/310.svg
 current-temperature
 
-<div><img src="/assets/icons/sunrise.svg" loading="lazy"
-                                          class="ik small-icon">Napkelte 4:35</div>
-                                <div class="pt-2"><img src="/assets/icons/sunset.svg" loading="lazy"
-                                                       class="ik small-icon">Napnyugta 20:34
-
+<div><img src="/assets/icons/sunrise.svg" loading="lazy" class="ik small-icon">Napkelte 4:35</div>
+<div class="pt-2"><img src="/assets/icons/sunset.svg" loading="lazy" class="ik small-icon">Napnyugta 20:34
 
 void MainWindow::on_pushButton_clicked()
 {

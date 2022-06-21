@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     MainPresenter p;
-    p.init(settings.host, settings.port);
+    p.init({settings});
     p.appendView(&w);
     w.show();
     p.initView(&w);

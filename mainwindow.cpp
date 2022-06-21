@@ -138,6 +138,6 @@ void MainWindow::set_DateTime()
 
 void MainWindow::set_CurrentWeatherView(const ViewModel::CurrentWeather &m)
 {
-    QString msg2 = m.currentWeather.msg;
+    QString msg2 = m.currentWeather.shortDesc;
     ui->label_img->setText("currentWeather:"+msg2);
 }

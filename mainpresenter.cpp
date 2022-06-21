@@ -45,10 +45,10 @@ void MainPresenter::appendView(IMainView *w)
 }
 
 
-auto MainPresenter::init(const QString& host, int port) -> bool
+auto MainPresenter::init(const MainPresenterInit& m) -> bool
 {
     _isInited = false;
-    _dowork.init(host, port);
+    _dowork.init({m.settings});
     connect(&_dowork,SIGNAL(ResponseConnectionAction(ResponseModel::Checkin)),
             this,SLOT(onResponseConnectionAction(ResponseModel::Checkin)));
     connect(&_dowork,SIGNAL(ResponseGetApiverAction(ResponseModel::GetApiVer)),

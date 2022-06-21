@@ -59,8 +59,36 @@ namespace Model
         QString toString();
     };
 
+    struct Sun{
+        QString title;
+        QString icon;
+        QTime time;
+    };
+
     struct CurrentWeather{
-        QString msg;
+        QString city;
+        QString shortDesc;
+        QString title;
+        QString value;
+        QString icon;
+        QString temperature;
+        Sun sunrise;
+        Sun sunset;
+    };
+
+    struct Warning{
+        QString title;
+        QString icon;
+        int value;
+    };
+
+    struct CurrentWarning{
+        Warning ts;
+        Warning wind;
+        Warning rainstorm;
+        Warning fzra;
+        Warning snowdrift;
+        QString map;
     };
 
     struct Data{
