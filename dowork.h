@@ -28,6 +28,7 @@ private:
     static const QString MEDIA_BACK;
 
     static const QString CURRENTWEATHER;
+    static const QString CURRENTWEATHERICON;
     //enum GetRequestType{checkin, apiver};
 public:
     explicit DoWork(QObject *parent = nullptr);   
@@ -52,6 +53,7 @@ public:
     QUuid GetMediaBack();    
 
     QUuid GetCurrentWeather();
+    QUuid GetCurrentWeatherIcon();
 
     ViewModel::State GetState(const Model::Device& device,
                       const Model::Media& media,
@@ -83,6 +85,7 @@ private:
     void GetApiverResponse(const QUuid& guid, QByteArray s);
     void GetFeatureRequestResponse(const QUuid& guid, QByteArray s);
     void GetCurrentWeatherResponse(const QUuid& guid, QByteArray s);
+    void GetCurrentWeatherIconResponse(const QUuid& guid, QByteArray s);
 
     Model::Data _data;
 
@@ -91,6 +94,7 @@ signals:
     void ResponseGetApiverAction(ResponseModel::GetApiVer);
     void ResponseGetFeatureRequestAction(ResponseModel::GetFeature);
     void ResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather);
+    void ResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon);
 
 private slots:
     void ResponseOkAction(const QUuid& guid, const QString& action, QByteArray s);

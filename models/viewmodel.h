@@ -3,6 +3,7 @@
 
 #include "model.h"
 
+#include <QPixmap>
 #include <QString>
 
 
@@ -59,6 +60,11 @@ namespace ViewModel
     struct CurrentWeather{
         Model::CurrentWeather currentWeather;
     };
+
+    struct CurrentWeatherIcon{
+        QPixmap pixmap;
+    };
+
 };
 
 #endif // VIEWMODEL_H

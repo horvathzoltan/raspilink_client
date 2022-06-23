@@ -26,6 +26,7 @@ public:
     void set_CallsView(const ViewModel::Calls& m);
     void set_DateTime();
     void set_CurrentWeatherView(const ViewModel::CurrentWeather& m);
+    void set_CurrentWeatherIconView(const ViewModel::CurrentWeatherIcon& m);
 
 signals:
     void GetConnectionActionTriggered(IMainView *sender);

@@ -18,8 +18,6 @@ void MainPresenter::appendView(IMainView *w)
 
     auto *view_obj = dynamic_cast<QObject*>(w);
 
-    QObject::connect(view_obj, SIGNAL(PushButtonActionTriggered(IMainView*)),
-                     this, SLOT(processPushButtonAction(IMainView*)));
 
     QObject::connect(view_obj, SIGNAL(GetConnectionActionTriggered(IMainView*)),
                      this, SLOT(processGetConnectionAction(IMainView*)));
@@ -57,7 +55,8 @@ auto MainPresenter::init(const MainPresenterInit& m) -> bool
             this,SLOT(onResponseGetFeatureRequestAction(ResponseModel::GetFeature)));
     connect(&_dowork,SIGNAL(ResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather)),
             this,SLOT(onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather)));
-
+    connect(&_dowork,SIGNAL(ResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon)),
+            this,SLOT(onResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon)));
     //_result = { Result::State::NotCalculated, -1};
     _isInited = true;
     return true;
@@ -196,10 +195,27 @@ void MainPresenter::processGetCurrentWeatherAction(IMainView *sender){
 void MainPresenter::onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather m)
 {
     if(_senders.contains(m.guid)){
+        auto sender = _senders[m.guid];
+
         //_data.apiVer = m.apiVer;
         _dowork.setData(m.currentWeather);
         ViewModel::CurrentWeather rm = {m.currentWeather};
-        _senders[m.guid]->set_CurrentWeatherView(rm);
+
+        sender->set_CurrentWeatherView(rm);
+        _senders.remove(m.guid);
+
+        auto guid_icon = _dowork.GetCurrentWeatherIcon();
+        _senders.insert(guid_icon,sender);
+    }
+}
+
+void MainPresenter::onResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon m)
+{
+    if(_senders.contains(m.guid)){
+        //_data.apiVer = m.apiVer;
+        //_dowork.setData(m.currentWeather);
+        ViewModel::CurrentWeatherIcon rm = {m.pixmap};
+        _senders[m.guid]->set_CurrentWeatherIconView(rm);
         _senders.remove(m.guid);
     }
 }

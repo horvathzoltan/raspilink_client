@@ -40,6 +40,7 @@ private slots:
     void processCallsRefreshAction(IMainView *sender);
     void processGetCurrentWeatherAction(IMainView *sender);
     void onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather);
+    void onResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon);
 
 private:
     bool _isInited = false;

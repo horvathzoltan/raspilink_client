@@ -56,7 +56,41 @@ QUuid HttpHelper::SendGet(const QString& action)
         request.setSslConfiguration(conf);
     }
 
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (X11; Linux x86_64; rv:101.0) Gecko/20100101 Firefox/101.0");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
+
+    request.setTransferTimeout(180000);
     QNetworkReply *reply = mgr->get(request);
+    return guid;
+}
+
+QUuid HttpHelper::Download(const QString& action, const QString& url)
+{
+    QUrl u(url);
+//    if(!action.startsWith('#')) _url.setPath((action.startsWith('/')?action:'/'+action));
+    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
+
+    //mgr->setNetworkAccessible(QNetworkAccessManager::Accessible);
+
+    auto guid = QUuid::createUuid();
+    _actions.insert(guid, {action,mgr});
+    auto guid2 = zShortGuid::Encode(guid);
+    QUrlQuery q;
+    q.addQueryItem(KEY, guid2);
+
+    u.setQuery(q.query());
+
+    connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(onFinish(QNetworkReply*)));
+    //connect(mgr,SIGNAL(finished(QNetworkReply*)),mgr,SLOT(deleteLater()));
+
+    QNetworkRequest request(u);
+    if(u.scheme()=="https"){
+        QSslConfiguration conf = request.sslConfiguration();
+        conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+        request.setSslConfiguration(conf);
+    }
+
+    mgr->get(request);
     return guid;
 }
 
@@ -100,36 +134,59 @@ void HttpHelper::SendPost(const QString& source_lang, const QString& dest_lang, 
 
 void HttpHelper::onFinish(QNetworkReply *rep)
 {
-    QByteArray b = rep->readAll();
-    QString err = rep->errorString();
+    QString err;
     auto url = rep->request().url();
+    QByteArray b;
 
-    if(url.hasQuery()){
-        auto queryString = url.query();
-        auto q = QUrlQuery(queryString);
-        if(q.hasQueryItem(KEY)){
-            QString keyString=q.queryItemValue(KEY);
-            auto guid = zShortGuid::Decode(keyString);
-            auto action = _actions[guid];
-            //action.mgr->deleteLater();
-
+    if(rep->error() != QNetworkReply::NoError) {
+        err = rep->errorString();
+        int statusCode = rep->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        auto a =  QVariant(statusCode).toString();
+        zInfo("error: "+err+ " code: "+a);
+    } else {
+        QByteArray location = rep->rawHeader(QString("Location").toLocal8Bit());
+        if (location.size() > 0) {
+            zInfo("redirect: "+QString(location));
+        } else {
+            b = rep->readAll();
 
             if(b.isEmpty())
             {
-                QString msg = "no reply";
-                if(!err.isEmpty()) msg+=" err: " + err;
-                msg+=" url: " + url.toDisplayString();
-                auto err = rep->error();
-                b = rep->readAll();
-                zInfo(msg);
-                //emit ResponseErr(guid, action, b);
+                err = "no reply";
             }
-            else{
-                zInfo("reply: "+(b.count()>20?b.mid(0,20)+"...":b));
-                emit ResponseOk(guid, action.action, b);
+
+            if(url.hasQuery()){
+                auto queryString = url.query();
+                auto q = QUrlQuery(queryString);
+                if(q.hasQueryItem(KEY)){
+                    QString keyString=q.queryItemValue(KEY);
+                    auto guid = zShortGuid::Decode(keyString);
+                    auto action = _actions[guid];
+
+                    if(!err.isEmpty())
+                    {
+                        emit ResponseErr(guid, action.action);
+                    }
+                    else{
+                        QString msg;
+                        int ix1 = b.indexOf('\n');
+                        if(ix1>20) ix1=20;
+                        msg = b.mid(0,ix1);
+                        if(b.length()>20) msg+="...";
+
+                        zInfo("reply: "+msg);
+                        emit ResponseOk(guid, action.action, b);
+                    }
+                    if(action.mgr) action.mgr->deleteLater();
+                    _actions.remove(guid);
+                }
             }
-            if(action.mgr) action.mgr->deleteLater();
-            _actions.remove(guid);
         }
-    }    
+    }
+    if(!err.isEmpty()){
+        QString msg;
+        msg+=" err: " + err;
+        msg+=" url: " + url.toDisplayString();
+        zInfo(msg);
+    }
 }

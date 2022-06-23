@@ -14,6 +14,7 @@ public:
     virtual void set_DeviceView(const ViewModel::Device& m) = 0;
     virtual void set_CallsView(const ViewModel::Calls& m) = 0;
     virtual void set_CurrentWeatherView(const ViewModel::CurrentWeather& m) = 0;
+    virtual void set_CurrentWeatherIconView(const ViewModel::CurrentWeatherIcon& m) = 0;
 
 public:
     virtual void GetConnectionActionTriggered(IMainView *sender) = 0;

@@ -3,6 +3,7 @@
 
 #include "model.h"
 
+#include <QPixmap>
 #include <QString>
 #include <QUuid>
 
@@ -37,6 +38,11 @@ namespace ResponseModel{
     struct GetCurrentWeather: public Base{
         GetCurrentWeather(const QUuid _guid):Base(_guid){};
         Model::CurrentWeather currentWeather;
+    };
+
+    struct GetCurrentWeatherIcon: public Base{
+        GetCurrentWeatherIcon(const QUuid _guid):Base(_guid){};
+        QPixmap pixmap;
     };
 
 };

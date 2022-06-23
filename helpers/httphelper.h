@@ -20,10 +20,12 @@ public:
 
     void SendPost(const QString& source_lang, const QString& dest_lang, const QString& msg);
 
-    QUuid SendGet(const QString &msg);
+    QUuid SendGet(const QString& action);
+    QUuid Download(const QString& action, const QString &url);
 public slots:
     void onFinish(QNetworkReply *rep);
 signals:
+    void ResponseErr(const QUuid& guid, const QString& key);
     void ResponseOk(const QUuid& guid, const QString& key, QByteArray s);
 
 private:

@@ -93,7 +93,8 @@ current-weather Derült
 current-weather-icon /assets/forecast-icons/310.svg
 current-temperature
 
-<div><img src="/assets/icons/sunrise.svg" loading="lazy" class="ik small-icon">Napkelte 4:35</div>
+<div><img src="/assets/icons/sunrise.svgsvg
+loading="lazy" class="ik small-icon">Napkelte 4:35</div>
 <div class="pt-2"><img src="/assets/icons/sunset.svg" loading="lazy" class="ik small-icon">Napnyugta 20:34
 
 void MainWindow::on_pushButton_clicked()

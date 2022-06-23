@@ -28,7 +28,7 @@ const QString DoWork::MEDIA_SKIP = QStringLiteral("/media/skip");
 const QString DoWork::MEDIA_BACK = QStringLiteral("/media/back");
 
 const QString DoWork::CURRENTWEATHER = QStringLiteral("#CURRENTWEATHER");
-
+const QString DoWork::CURRENTWEATHERICON = QStringLiteral("#CURRENTWEATHERICON");
 
 DoWork::DoWork(QObject *parent) :QObject(parent)
 {
@@ -178,8 +178,8 @@ void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteAr
     if(action==CHECKIN) GetCheckinResponse(guid,s);
     else if(action==APIVER) GetApiverResponse(guid,s);
     else if(action==FEATURE_REQUEST) GetFeatureRequestResponse(guid,s);
-    else if(action==CURRENTWEATHER)
-        GetCurrentWeatherResponse(guid,s);
+    else if(action==CURRENTWEATHER) GetCurrentWeatherResponse(guid,s);
+    else if(action==CURRENTWEATHERICON) GetCurrentWeatherIconResponse(guid,s);
     else zInfo("unknown action: "+action);
 }
 
@@ -288,9 +288,23 @@ void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
             r.currentWeather.icon = HTMLHelper::GetImgSrc(cw2).trimmed();
 
             r.msg = "hutty2";
+
         }
     }
 
-
     emit ResponseGetCurrentWeatherRequestAction(r);
+}
+
+QUuid DoWork::GetCurrentWeatherIcon()
+{
+    return _httpHelper_idokep.Download(CURRENTWEATHERICON, "http://d39f23jfph0ylk.cloudfront.net/computer.com.jpg");
+}
+
+void DoWork::GetCurrentWeatherIconResponse(const QUuid& guid, QByteArray s){
+
+    ResponseModel::GetCurrentWeatherIcon r(guid);
+    QPixmap pm;
+    pm.loadFromData(s);
+    r.pixmap = pm;
+    emit ResponseGetCurrentWeatherIconRequestAction(r);
 }
