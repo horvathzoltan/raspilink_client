@@ -203,8 +203,8 @@ void MainPresenter::onResponseGetCurrentWeatherRequestAction(ResponseModel::GetC
 
         sender->set_CurrentWeatherView(rm);
         _senders.remove(m.guid);
-
-        auto guid_icon = _dowork.GetCurrentWeatherIcon();
+        //m.currentWeather.icon;
+        auto guid_icon = _dowork.GetCurrentWeatherIcon(m.currentWeather.icon);
         _senders.insert(guid_icon,sender);
     }
 }
@@ -212,8 +212,6 @@ void MainPresenter::onResponseGetCurrentWeatherRequestAction(ResponseModel::GetC
 void MainPresenter::onResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon m)
 {
     if(_senders.contains(m.guid)){
-        //_data.apiVer = m.apiVer;
-        //_dowork.setData(m.currentWeather);
         ViewModel::CurrentWeatherIcon rm = {m.pixmap};
         _senders[m.guid]->set_CurrentWeatherIconView(rm);
         _senders.remove(m.guid);

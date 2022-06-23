@@ -31,26 +31,61 @@ bool HttpHelper::init(const QString& host, int port)
     return _inited;
 }
 
-QUuid HttpHelper::SendGet(const QString& action)
+QUuid HttpHelper::GetAction(const QString& action)
 {
+    auto mgr = CreateMgr();
+    auto guid = RegisterAction(action, mgr);
     if(!action.startsWith('#')) _url.setPath((action.startsWith('/')?action:'/'+action));
+    auto request = CreateRequest(_url);
+    mgr->get(request);
+    return guid;
+}
+
+QUuid HttpHelper::Download(const QString& action, const QString& url)
+{
+    QUrl u(url);
+    if(u.isValid()){
+        auto mgr = CreateMgr();
+        auto guid = RegisterAction(action, mgr);
+        auto request = CreateRequest(u);
+        mgr->get(request);
+        return guid;
+    } else{
+        return {};
+    }
+}
+
+QUuid HttpHelper::DownloadFromHost(const QString& action, const QString& path)
+{
+    auto mgr = CreateMgr();
+    auto guid = RegisterAction(action, mgr);
+    _url.setPath((path.startsWith('/')?path:'/'+path));
+    auto request = CreateRequest(_url);
+    mgr->get(request);
+    return guid;
+}
+
+QNetworkAccessManager* HttpHelper::CreateMgr()
+{
     QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
+    connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(onFinish(QNetworkReply*)));
+    return mgr;
+}
 
-    //mgr->setNetworkAccessible(QNetworkAccessManager::Accessible);
-
+QUuid HttpHelper::RegisterAction(const QString &action, QNetworkAccessManager *mgr)
+{
     auto guid = QUuid::createUuid();
     _actions.insert(guid, {action,mgr});
     auto guid2 = zShortGuid::Encode(guid);
     QUrlQuery q;
     q.addQueryItem(KEY, guid2);
-
     _url.setQuery(q.query());
+    return guid;
+}
 
-    connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(onFinish(QNetworkReply*)));
-    //connect(mgr,SIGNAL(finished(QNetworkReply*)),mgr,SLOT(deleteLater()));
-
-    QNetworkRequest request(_url);
-    if(_url.scheme()=="https"){
+QNetworkRequest HttpHelper::CreateRequest(const QUrl& url){
+    QNetworkRequest request(url);
+    if(url.scheme()=="https"){
         QSslConfiguration conf = request.sslConfiguration();
         conf.setPeerVerifyMode(QSslSocket::VerifyNone);
         request.setSslConfiguration(conf);
@@ -60,39 +95,10 @@ QUuid HttpHelper::SendGet(const QString& action)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
 
     request.setTransferTimeout(180000);
-    QNetworkReply *reply = mgr->get(request);
-    return guid;
+    return request;
 }
 
-QUuid HttpHelper::Download(const QString& action, const QString& url)
-{
-    QUrl u(url);
-//    if(!action.startsWith('#')) _url.setPath((action.startsWith('/')?action:'/'+action));
-    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
 
-    //mgr->setNetworkAccessible(QNetworkAccessManager::Accessible);
-
-    auto guid = QUuid::createUuid();
-    _actions.insert(guid, {action,mgr});
-    auto guid2 = zShortGuid::Encode(guid);
-    QUrlQuery q;
-    q.addQueryItem(KEY, guid2);
-
-    u.setQuery(q.query());
-
-    connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(onFinish(QNetworkReply*)));
-    //connect(mgr,SIGNAL(finished(QNetworkReply*)),mgr,SLOT(deleteLater()));
-
-    QNetworkRequest request(u);
-    if(u.scheme()=="https"){
-        QSslConfiguration conf = request.sslConfiguration();
-        conf.setPeerVerifyMode(QSslSocket::VerifyNone);
-        request.setSslConfiguration(conf);
-    }
-
-    mgr->get(request);
-    return guid;
-}
 
 void HttpHelper::SendPost(const QString& source_lang, const QString& dest_lang, const QString& msg)
 {
@@ -173,6 +179,7 @@ void HttpHelper::onFinish(QNetworkReply *rep)
                         if(ix1>20) ix1=20;
                         msg = b.mid(0,ix1);
                         if(b.length()>20) msg+="...";
+                        msg+=" url: " + url.toDisplayString();
 
                         zInfo("reply: "+msg);
                         emit ResponseOk(guid, action.action, b);

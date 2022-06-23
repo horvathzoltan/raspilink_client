@@ -58,57 +58,57 @@ auto DoWork::init(const DoWorkInit& m) -> bool
 
 QUuid DoWork::GetCheckin()
 {
-    return _httpHelper.SendGet(CHECKIN);
+    return _httpHelper.GetAction(CHECKIN);
 }
 
 QUuid DoWork::GetApiver()
 {
-    return _httpHelper.SendGet(APIVER);
+    return _httpHelper.GetAction(APIVER);
 }
 
 QUuid DoWork::GetFeatureRequest()
 {
-    return _httpHelper.SendGet(FEATURE_REQUEST);
+    return _httpHelper.GetAction(FEATURE_REQUEST);
 }
 
 QUuid DoWork::GetCallsAnswer()
 {
-    return _httpHelper.SendGet(CALLS_ANSWER);
+    return _httpHelper.GetAction(CALLS_ANSWER);
 }
 
 QUuid DoWork::GetCallsHangup()
 {
-    return _httpHelper.SendGet(CALLS_HANGUP);
+    return _httpHelper.GetAction(CALLS_HANGUP);
 }
 
 QUuid DoWork::GetCallsHangupAll()
 {
-    return _httpHelper.SendGet(CALLS_HANGUPALL);
+    return _httpHelper.GetAction(CALLS_HANGUPALL);
 }
 
 QUuid DoWork::GetCallsDial()
 {
-    return _httpHelper.SendGet(CALLS_DIAL);
+    return _httpHelper.GetAction(CALLS_DIAL);
 }
 
 QUuid DoWork::GetMediaPlay()
 {
-    return _httpHelper.SendGet(MEDIA_PLAY);
+    return _httpHelper.GetAction(MEDIA_PLAY);
 }
 
 QUuid DoWork::GetMediaPause()
 {
-    return _httpHelper.SendGet(MEDIA_PAUSE);
+    return _httpHelper.GetAction(MEDIA_PAUSE);
 }
 
 QUuid DoWork::GetMediaSkip()
 {
-    return _httpHelper.SendGet(MEDIA_SKIP);
+    return _httpHelper.GetAction(MEDIA_SKIP);
 }
 
 QUuid DoWork::GetMediaBack()
 {
-    return _httpHelper.SendGet(MEDIA_BACK);
+    return _httpHelper.GetAction(MEDIA_BACK);
 }
 
 ViewModel::State DoWork::GetState(const Model::Device &device, const Model::Media &media, const Model::Calls &calls)
@@ -261,7 +261,7 @@ void DoWork::GetFeatureRequestResponse(const QUuid& guid, QByteArray s){
 
 QUuid DoWork::GetCurrentWeather()
 {
-    return _httpHelper_idokep.SendGet(CURRENTWEATHER);
+    return _httpHelper_idokep.GetAction(CURRENTWEATHER);
 }
 
 void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
@@ -295,9 +295,9 @@ void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
     emit ResponseGetCurrentWeatherRequestAction(r);
 }
 
-QUuid DoWork::GetCurrentWeatherIcon()
+QUuid DoWork::GetCurrentWeatherIcon(const QString& iconpath)
 {
-    return _httpHelper_idokep.Download(CURRENTWEATHERICON, "http://d39f23jfph0ylk.cloudfront.net/computer.com.jpg");
+    return _httpHelper_idokep.DownloadFromHost(CURRENTWEATHERICON, iconpath);
 }
 
 void DoWork::GetCurrentWeatherIconResponse(const QUuid& guid, QByteArray s){

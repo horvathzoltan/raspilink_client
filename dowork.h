@@ -53,7 +53,7 @@ public:
     QUuid GetMediaBack();    
 
     QUuid GetCurrentWeather();
-    QUuid GetCurrentWeatherIcon();
+    QUuid GetCurrentWeatherIcon(const QString& iconpath);
 
     ViewModel::State GetState(const Model::Device& device,
                       const Model::Media& media,

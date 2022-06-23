@@ -20,8 +20,11 @@ public:
 
     void SendPost(const QString& source_lang, const QString& dest_lang, const QString& msg);
 
-    QUuid SendGet(const QString& action);
+    QUuid GetAction(const QString& action);
     QUuid Download(const QString& action, const QString &url);
+    QUuid DownloadFromHost(const QString& action, const QString &path);
+
+    //QString url(){ return _url.host();}
 public slots:
     void onFinish(QNetworkReply *rep);
 signals:
@@ -37,6 +40,9 @@ private:
     };
 
     QMap<QUuid, Action> _actions;
+    static QNetworkRequest CreateRequest(const QUrl& url);
+    QUuid RegisterAction(const QString& action, QNetworkAccessManager* mgr);
+    QNetworkAccessManager* CreateMgr();
 };
 
 #endif // HTTPHELPER_H
