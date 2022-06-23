@@ -15,6 +15,7 @@ SOURCES += \
     dowork.cpp \
     helpers/commandlineparserhelper.cpp \
     helpers/filenamehelper.cpp \
+    helpers/htmlhelper.cpp \
     helpers/httphelper.cpp \
     helpers/textfilehelper.cpp \
     logger.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     dowork.h \
     helpers/commandlineparserhelper.h \
     helpers/filenamehelper.h \
+    helpers/htmlhelper.h \
     helpers/httphelper.h \
     helpers/textfilehelper.h \
     imainview.h \

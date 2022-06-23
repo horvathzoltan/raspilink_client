@@ -77,6 +77,7 @@ private:
     HttpHelper _httpHelper;
     HttpHelper _httpHelper_idokep;
     HttpHelper _httpHelper_met;
+    Settings::CurrentWeather _currentWeatherKeys;
 
     void GetCheckinResponse(const QUuid& guid, QByteArray s);
     void GetApiverResponse(const QUuid& guid, QByteArray s);

@@ -74,6 +74,11 @@ namespace Model
         QString temperature;
         Sun sunrise;
         Sun sunset;
+
+        QString toString() const {
+            QString msg = title+": "+temperature+", "+value+ " - "+ shortDesc;
+            return msg;
+        };
     };
 
     struct Warning{

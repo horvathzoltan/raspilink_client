@@ -10,6 +10,8 @@
 #include <QJsonObject>
 #include <models/model.h>
 #include <models/featurerequest.h>
+#include "helpers/htmlhelper.h"
+
 
 const QString DoWork::CHECKIN = QStringLiteral("checkin");
 const QString DoWork::APIVER = QStringLiteral("apiver");
@@ -37,6 +39,7 @@ auto DoWork::init(const DoWorkInit& m) -> bool
 {
     _isInited = false;
 
+    _currentWeatherKeys = m.settings.currentWeather;
     if(!_httpHelper.init(m.settings.host, m.settings.port)) return _isInited;
     if(!_httpHelper_idokep.init(m.settings.host_idokep, -1)) return _isInited;
     if(!_httpHelper_met.init(m.settings.host_met, -1)) return _isInited;
@@ -262,21 +265,32 @@ QUuid DoWork::GetCurrentWeather()
 }
 
 void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
-    //QJsonParseError errorPtr;
-    //QJsonDocument doc = QJsonDocument::fromJson(s, &errorPtr);
-    //QJsonObject rootobj = doc.object();
     QString txt(s);
     ResponseModel::GetCurrentWeather r(guid);
 
-    //Model::ApiVer m;
-    //if(rootobj.isEmpty()){
-    //    r.msg = "no response";
-    //}else{
-        //r.currentWeather = Model::CurrentWeather::JsonParse(rootobj);
-        //r.msg = "currentWeather: "+r.currentWeather.toString();
-        r.currentWeather = {.shortDesc = txt.mid(0, 20)};
-        r.msg = "hutty2";
-    //}
+    if(txt.isEmpty()){
+        r.msg = "no response";
+    } else{
+        auto cw = HTMLHelper::GetNestedDivContent(txt, _currentWeatherKeys.div);
+        if(!cw.isEmpty())
+        {
+            r.currentWeather.shortDesc = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.shortDesc).trimmed();
+            r.currentWeather.title = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.title).trimmed();
+            r.currentWeather.value = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.value).trimmed();
+            r.currentWeather.temperature = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.temperature).trimmed();
+            r.currentWeather.sunrise.title = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.sunrise).trimmed();
+            r.currentWeather.sunrise.time = HTMLHelper::GetTime(r.currentWeather.sunrise.title);
+
+            r.currentWeather.sunset.title = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.sunset).trimmed();
+            r.currentWeather.sunset.time = HTMLHelper::GetTime(r.currentWeather.sunset.title);
+
+            auto cw2 = HTMLHelper::GetNestedDivContent(cw, _currentWeatherKeys.icon);
+            r.currentWeather.icon = HTMLHelper::GetImgSrc(cw2).trimmed();
+
+            r.msg = "hutty2";
+        }
+    }
+
 
     emit ResponseGetCurrentWeatherRequestAction(r);
 }

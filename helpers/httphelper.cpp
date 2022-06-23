@@ -34,10 +34,12 @@ bool HttpHelper::init(const QString& host, int port)
 QUuid HttpHelper::SendGet(const QString& action)
 {
     if(!action.startsWith('#')) _url.setPath((action.startsWith('/')?action:'/'+action));
-    QNetworkAccessManager * mgr = new QNetworkAccessManager(this);
+    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
+
+    //mgr->setNetworkAccessible(QNetworkAccessManager::Accessible);
 
     auto guid = QUuid::createUuid();
-    _actions.insert(guid, action);
+    _actions.insert(guid, {action,mgr});
     auto guid2 = zShortGuid::Encode(guid);
     QUrlQuery q;
     q.addQueryItem(KEY, guid2);
@@ -45,7 +47,7 @@ QUuid HttpHelper::SendGet(const QString& action)
     _url.setQuery(q.query());
 
     connect(mgr,SIGNAL(finished(QNetworkReply*)),this,SLOT(onFinish(QNetworkReply*)));
-    connect(mgr,SIGNAL(finished(QNetworkReply*)),mgr,SLOT(deleteLater()));
+    //connect(mgr,SIGNAL(finished(QNetworkReply*)),mgr,SLOT(deleteLater()));
 
     QNetworkRequest request(_url);
     if(_url.scheme()=="https"){
@@ -53,7 +55,8 @@ QUuid HttpHelper::SendGet(const QString& action)
         conf.setPeerVerifyMode(QSslSocket::VerifyNone);
         request.setSslConfiguration(conf);
     }
-    mgr->get(request);
+
+    QNetworkReply *reply = mgr->get(request);
     return guid;
 }
 
@@ -108,19 +111,25 @@ void HttpHelper::onFinish(QNetworkReply *rep)
             QString keyString=q.queryItemValue(KEY);
             auto guid = zShortGuid::Decode(keyString);
             auto action = _actions[guid];
-            _actions.remove(guid);
+            //action.mgr->deleteLater();
+
+
             if(b.isEmpty())
             {
                 QString msg = "no reply";
                 if(!err.isEmpty()) msg+=" err: " + err;
                 msg+=" url: " + url.toDisplayString();
+                auto err = rep->error();
+                b = rep->readAll();
                 zInfo(msg);
                 //emit ResponseErr(guid, action, b);
             }
             else{
                 zInfo("reply: "+(b.count()>20?b.mid(0,20)+"...":b));
-                emit ResponseOk(guid, action, b);
+                emit ResponseOk(guid, action.action, b);
             }
+            if(action.mgr) action.mgr->deleteLater();
+            _actions.remove(guid);
         }
-    }
+    }    
 }

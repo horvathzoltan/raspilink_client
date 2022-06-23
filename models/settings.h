@@ -13,6 +13,19 @@ public:
     QString host_idokep;
     QString host_met;
 
+    struct CurrentWeather{
+        QString div;
+        QString shortDesc;
+        QString title;
+        QString value;
+        QString icon;
+        QString temperature;
+        QString sunrise;
+        QString sunset;
+    };
+
+    CurrentWeather currentWeather;
+
     Settings();
     static Settings Load(const QString& dir);
     bool isValid();

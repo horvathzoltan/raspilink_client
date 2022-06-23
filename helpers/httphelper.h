@@ -29,7 +29,12 @@ signals:
 private:
     bool _inited = false;
     QUrl _url;
-    QMap<QUuid, QString> _actions;
+    struct Action{
+        QString action;
+        QNetworkAccessManager *mgr;
+    };
+
+    QMap<QUuid, Action> _actions;
 };
 
 #endif // HTTPHELPER_H
