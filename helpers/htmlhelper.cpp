@@ -15,6 +15,7 @@ const QString HTMLHelper::timeregexp = QStringLiteral(R"((\d?\d?:\d\d?))");
 
 QString HTMLHelper::GetContent(const QString &txt, const QString& regextxt)
 {
+    if(regextxt.isEmpty()) return{};
        QRegularExpression rx(regextxt);
        auto m = rx.match(txt);
        if(!m.hasMatch())return {};
@@ -23,6 +24,7 @@ QString HTMLHelper::GetContent(const QString &txt, const QString& regextxt)
 
 QString HTMLHelper::GetDivContent(const QString &txt, const QString& token)
 {
+    if(token.isEmpty()) return{};
     return GetContent(txt, divregexp.arg(token));
 }
 
@@ -39,33 +41,34 @@ QTime HTMLHelper::GetTime(const QString &txt)
 }
 
 QString HTMLHelper::GetNestedDivContent(const QString &txt, const QString& token)
-{
-       QRegularExpression rx(divregexp2.arg(token));
-       auto m = rx.match(txt);
-       if(!m.hasMatch())return {};
+{    
+    if(token.isEmpty()) return{};
+    QRegularExpression rx(divregexp2.arg(token));
+    auto m = rx.match(txt);
+    if(!m.hasMatch())return {};
 
-       int ix1 = m.capturedStart();
-       //auto txt3=txt.mid(ix1,50);
-       int i=0;
-       //int j=1;
-       int ixd=ix1+3;
-       while(ixd!=-1){
-           ixd=txt.indexOf("div",ixd);
-           if(ixd==-1) break;
-           //j++;
-//           auto txt5=txt.mid(ixd,50);
-//           if(j>170){
+    int ix1 = m.capturedStart();
+    //auto txt3=txt.mid(ix1,50);
+    int i=0;
+    //int j=1;
+    int ixd=ix1+3;
+    while(ixd!=-1){
+       ixd=txt.indexOf("div",ixd);
+       if(ixd==-1) break;
+       //j++;
+    //           auto txt5=txt.mid(ixd,50);
+    //           if(j>170){
 
-//               zInfo("hutty");
+    //               zInfo("hutty");
 
-//           }
-           auto c = txt[ixd-1];
-           if(c=='<')i++;
-           else if(c=='/') i--;
-           if(i==0) break;
-           ixd+=3;
-       }
-       //auto txt4=txt.mid(ixd,50);
-       auto txt2=txt.mid(ix1,ixd-ix1);
-       return txt2;
+    //           }
+       auto c = txt[ixd-1];
+       if(c=='<')i++;
+       else if(c=='/') i--;
+       if(i==0) break;
+       ixd+=3;
+    }
+    //auto txt4=txt.mid(ixd,50);
+    auto txt2=txt.mid(ix1,ixd-ix1);
+    return txt2;
 }
