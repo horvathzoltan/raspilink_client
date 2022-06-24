@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName(poj);
-/*
+
     // remember what current directory is
     QString currentDir=QDir::currentPath();
 
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
     // restore current dir
     QDir::setCurrent(currentDir);
-*/
+
     CommadLineArgs params = CommadLineArgs::Parse(a);
 
     Settings settings = Settings::Load(params.working_dir);
