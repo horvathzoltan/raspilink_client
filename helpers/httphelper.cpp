@@ -86,6 +86,9 @@ QUuid HttpHelper::RegisterAction(const QString &action, QNetworkAccessManager *m
 QNetworkRequest HttpHelper::CreateRequest(const QUrl& url){
     QNetworkRequest request(url);
     if(url.scheme()=="https"){
+        //QSslConfiguration conf = QSslConfiguration::defaultConfiguration();
+        //conf.setProtocol(QSsl::TlsV1_2);
+        //request.setSslConfiguration(conf);
         QSslConfiguration conf = request.sslConfiguration();
         conf.setPeerVerifyMode(QSslSocket::VerifyNone);
         request.setSslConfiguration(conf);
