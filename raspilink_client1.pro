@@ -55,5 +55,6 @@ else: unix:!android: target.path = /home/pi/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    idokep.html \
     settings.ini \
     todo.txt
