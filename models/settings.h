@@ -26,6 +26,17 @@ public:
 
     CurrentWeather currentWeather;
 
+    struct CurrentWarning{
+        QString div;
+        QString tag;
+        QString title;
+        QString icon;
+        QString level_icon;
+        QString map;
+    };
+
+    CurrentWarning currentWarning;
+
     Settings();
     static Settings Load(const QString& dir);
     bool isValid();

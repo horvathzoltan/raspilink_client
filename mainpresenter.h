@@ -28,19 +28,30 @@ private:
     ViewModel::Page GetActivePage(ViewModel::State state);
 
 private slots:
+    // (wiew)action -> (presenter)processAction -> [ (dowork)ResponseAction -> (presenter)onResponseAction -> ] (wiew)set_view
+    //                 ------------------------                                ---------------------------
+    //1//checkin
     void processGetConnectionAction(IMainView *sender);
     void onResponseConnectionAction(ResponseModel::Checkin);
+    //2//apiver
     void processGetApiverAction(IMainView *sender);
     void onResponseGetApiverAction(ResponseModel::GetApiVer);
+    //3//features
     void processGetFeatureRequestAction(IMainView *sender);
     void onResponseGetFeatureRequestAction(ResponseModel::GetFeature);
-
+    //4//media
     void processMediaRefreshAction(IMainView *sender);
+    //5//device
     void processDeviceRefreshAction(IMainView *sender);
+    //6//calls
     void processCallsRefreshAction(IMainView *sender);
-    void processGetCurrentWeatherAction(IMainView *sender);
-    void onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather);
+    //7//weather
+    void processGetCurrentWeatherAction(IMainView *sender);    
+    void onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather);    
     void onResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon);
+    //8//warning
+    void processGetCurrentWarningAction(IMainView *sender);
+    void onResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning);
 
 private:
     bool _isInited = false;

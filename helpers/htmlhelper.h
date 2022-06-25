@@ -1,21 +1,24 @@
 #ifndef HTMLHELPER_H
 #define HTMLHELPER_H
 
+#include <QSet>
 #include <QString>
 #include <QTime>
 
 class HTMLHelper
 {
 private:
-    static const QString divregexp;
-    static const QString divregexp2;
-    static const QString divregexp3;
+    static const QSet<QString> _selfClosingTags;
+    static const QString tagregexp;
+    static const QString tagregexp20;
+    static const QString tagregexp21;
+    static const QString imgsource;
     static const QString timeregexp;
     static QString GetContent(const QString &txt, const QString& regextxt);
 public:
     static QString GetDivContent(const QString& txt, const QString& token);
     static QString GetImgSrc(const QString& txt);
-    static QString GetNestedDivContent(const QString& txt, const QString& token);
+    static QStringList GetNestedTagContent(const QString& txt, const QString& tag, const QString& token);
     static QTime GetTime(const QString &txt);
 };
 

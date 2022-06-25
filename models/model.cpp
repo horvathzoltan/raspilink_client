@@ -125,3 +125,4 @@ QString Model::Calls::toString()
 {
     return this->msg;
 }
+

@@ -29,6 +29,7 @@ const QString DoWork::MEDIA_BACK = QStringLiteral("/media/back");
 
 const QString DoWork::CURRENTWEATHER = QStringLiteral("#CURRENTWEATHER");
 const QString DoWork::CURRENTWEATHERICON = QStringLiteral("#CURRENTWEATHERICON");
+const QString DoWork::CURRENTWARNING = QStringLiteral("#CURRENTWARNING");
 
 DoWork::DoWork(QObject *parent) :QObject(parent)
 {
@@ -40,6 +41,8 @@ auto DoWork::init(const DoWorkInit& m) -> bool
     _isInited = false;
 
     _currentWeatherKeys = m.settings.currentWeather;
+    _currentWarningKeys = m.settings.currentWarning;
+
     if(!_httpHelper.init(m.settings.host, m.settings.port)) return _isInited;
     if(!_httpHelper_idokep.init(m.settings.host_idokep, -1)) return _isInited;
     if(!_httpHelper_met.init(m.settings.host_met, -1)) return _isInited;
@@ -180,6 +183,7 @@ void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteAr
     else if(action==FEATURE_REQUEST) GetFeatureRequestResponse(guid,s);
     else if(action==CURRENTWEATHER) GetCurrentWeatherResponse(guid,s);
     else if(action==CURRENTWEATHERICON) GetCurrentWeatherIconResponse(guid,s);
+    else if(action==CURRENTWARNING) GetCurrentWarningResponse(guid,s);
     else zInfo("unknown action: "+action);
 }
 
@@ -271,9 +275,10 @@ void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
     if(txt.isEmpty()){
         r.msg = "no response";
     } else{
-        auto cw = HTMLHelper::GetNestedDivContent(txt, _currentWeatherKeys.div);
-        if(!cw.isEmpty())
+        auto divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWeatherKeys.div);
+        if(!divs.isEmpty())
         {
+            auto cw=divs.first();
             r.currentWeather.shortDesc = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.shortDesc).trimmed();
             r.currentWeather.title = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.title).trimmed();
             r.currentWeather.value = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.value).trimmed();
@@ -284,9 +289,11 @@ void DoWork::GetCurrentWeatherResponse(const QUuid& guid, QByteArray s){
             r.currentWeather.sunset.title = HTMLHelper::GetDivContent(cw, _currentWeatherKeys.sunset).trimmed();
             r.currentWeather.sunset.time = HTMLHelper::GetTime(r.currentWeather.sunset.title);
 
-            auto cw2 = HTMLHelper::GetNestedDivContent(cw, _currentWeatherKeys.icon);
-            r.currentWeather.icon = HTMLHelper::GetImgSrc(cw2).trimmed();
-
+            auto divs2 = HTMLHelper::GetNestedTagContent(cw, "div", _currentWeatherKeys.icon);
+            if(!divs2.isEmpty()){
+               auto cw2=divs2.first();
+               r.currentWeather.icon = HTMLHelper::GetImgSrc(cw2).trimmed();
+            }
             r.msg = "hutty2";
 
         }
@@ -307,4 +314,53 @@ void DoWork::GetCurrentWeatherIconResponse(const QUuid& guid, QByteArray s){
     pm.loadFromData(s);
     r.pixmap = pm;
     emit ResponseGetCurrentWeatherIconRequestAction(r);
+}
+
+/*warning*/
+
+QUuid DoWork::GetCurrentWarning()
+{
+    return _httpHelper_met.GetAction(CURRENTWARNING);
+}
+
+void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
+    QString txt(s);
+    ResponseModel::GetCurrentWarning r(guid);
+
+    if(txt.isEmpty()){
+        r.msg = "no response";
+    } else{
+        auto divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.div);
+        if(!divs.isEmpty())
+        {
+            auto div = divs.first();
+            auto uls = HTMLHelper::GetNestedTagContent(div, "ul", "");
+            auto ul = uls.first();
+            auto lis = HTMLHelper::GetNestedTagContent(ul, _currentWarningKeys.tag, "");
+
+            for(auto&li:lis){
+                Model::Warning w;
+                w.title = HTMLHelper::GetDivContent(li, _currentWarningKeys.title).trimmed();
+                //w.icon = HTMLHelper::GetImgSrc(li).trimmed();
+                ///images/warningb/wind.gif
+                auto imgs = HTMLHelper::GetNestedTagContent(li, "img", "");
+
+                if(!imgs.isEmpty()&&imgs.count()>=2){
+                     w.icon = HTMLHelper::GetImgSrc(imgs[0]).trimmed();
+                     w.value_icon = HTMLHelper::GetImgSrc(imgs[1]).trimmed();
+                     if(!w.value_icon.isEmpty())
+                     {
+                         w.value = Model::Warning::ParseValue(w.value_icon);
+                     }
+                }
+                r.currentWarning.warnings.append(w);
+            }         
+
+            zInfo("CurrentWarning: "+QString::number(r.currentWarning.warnings.count()));
+            r.msg = "hutty3";
+
+        }
+    }
+
+    emit ResponseGetCurrentWarningRequestAction(r);
 }

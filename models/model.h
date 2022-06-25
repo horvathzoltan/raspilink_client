@@ -81,19 +81,41 @@ namespace Model
         };
     };
 
+    //        Warning ts; //zivatar
+    //        Warning wind;//széllökés
+    //        Warning rainstorm; //felhőszakadás
+    //        Warning fzra;//ónos eső,
+    //        Warning snowdrift;//hófúvás
+    //Havazásra és nagy mennyiségű esőre
+    //hőség, extrém hideg, továbbá a tartós sűrű köd
+
     struct Warning{
         QString title;
         QString icon;
-        int value;
+        QString value_icon;
+        int value=0;
+
+        //src="/images/warningb/w0.gif"
+        static int ParseValue(const QString& txt){
+            static const QString rtxt = R"(\/[^\d]*(\d+)\.)";
+            static const QRegularExpression rx(rtxt);
+
+            auto m = rx.match(txt);
+            if(!m.hasMatch()) return -1;
+            bool ok;
+            int i = m.captured(1).toInt(&ok);
+            if(!ok) return -1;
+            return i;
+        }
     };
 
     struct CurrentWarning{
-        Warning ts;
-        Warning wind;
-        Warning rainstorm;
-        Warning fzra;
-        Warning snowdrift;
+        QList<Warning> warnings;
         QString map;
+    };
+
+    struct Warnings{
+        QList<Warning> warnings;
     };
 
     struct Data{
@@ -103,6 +125,7 @@ namespace Model
         Device device;
         Calls calls;
         CurrentWeather currentWeather;
+        CurrentWarning currentWarning;
     };       
 };
 

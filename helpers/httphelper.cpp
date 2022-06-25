@@ -75,7 +75,7 @@ QNetworkAccessManager* HttpHelper::CreateMgr()
 QUuid HttpHelper::RegisterAction(const QString &action, QNetworkAccessManager *mgr)
 {
     auto guid = QUuid::createUuid();
-    _actions.insert(guid, {action,mgr});
+    if(!action.isEmpty()) _actions.insert(guid, {action,mgr});
     auto guid2 = zShortGuid::Encode(guid);
     QUrlQuery q;
     q.addQueryItem(KEY, guid2);
@@ -156,6 +156,8 @@ void HttpHelper::onFinish(QNetworkReply *rep)
         QByteArray location = rep->rawHeader(QString("Location").toLocal8Bit());
         if (location.size() > 0) {
             zInfo("redirect: "+QString(location));
+            Download("", location);
+            return;
         } else {
             b = rep->readAll();
 

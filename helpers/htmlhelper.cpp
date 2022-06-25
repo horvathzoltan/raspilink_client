@@ -3,10 +3,22 @@
 
 #include <QRegularExpression>
 
-const QString HTMLHelper::divregexp = QStringLiteral(R"(<div.*%1[^-][^>]*>([^<]*)<\/div>)");
-const QString HTMLHelper::divregexp2 = QStringLiteral(R"(<div.*%1(?:.*\W.*)>)");
-const QString HTMLHelper::divregexp3 = QStringLiteral(R"(<img[\w\W]*src=\"([^\"]*)\"[^>]*>)");
-const QString HTMLHelper::timeregexp = QStringLiteral(R"((\d?\d?:\d\d?))");
+const QSet<QString> HTMLHelper::_selfClosingTags{"area", "base", "br", "col", "embed", "hr",
+                                                 "img", "input", "link", "meta", "param", "source",
+                                                "track", "wbr", "command", "keygen", "menuitem"};
+
+
+const QString HTMLHelper::tagregexp = //div tartalma
+        QStringLiteral(R"(<%2[^>]*%1[^-]?[^>]*>([^<]*)<\/%2>)");
+const QString HTMLHelper::tagregexp20 = //teljes tag 1
+        QStringLiteral(R"(<%2[^>]*>)");
+const QString HTMLHelper::tagregexp21 = //teljes tag 2
+        QStringLiteral(R"(<%2[^>]*%1[^>]*>)");
+const QString HTMLHelper::imgsource = // img source
+        QStringLiteral(R"(<img[^>]*src=(?:(?:\"([^\"]*)\")|(?:\'([^\']*)\'))[^>]*>)");
+const QString HTMLHelper::timeregexp =
+        QStringLiteral(R"((\d?\d?:\d\d?))");
+
 //(\d?\d?:\d\d?)
 //<img[\w\W]*src="([^"]*)"[^>]*>
 // <div.*sunrise(?:.*\n.*)>(.*)<\/div>
@@ -18,19 +30,25 @@ QString HTMLHelper::GetContent(const QString &txt, const QString& regextxt)
     if(regextxt.isEmpty()) return{};
        QRegularExpression rx(regextxt);
        auto m = rx.match(txt);
-       if(!m.hasMatch())return {};
-       return m.captured(1);
+       if(!m.hasMatch()) return {};
+       if(m.captured().count()>=3)
+       {
+           if(!m.captured(1).isEmpty()) return m.captured(1);
+           if(!m.captured(2).isEmpty()) return m.captured(2);
+       }
+       return {};
 }
 
 QString HTMLHelper::GetDivContent(const QString &txt, const QString& token)
 {
     if(token.isEmpty()) return{};
-    return GetContent(txt, divregexp.arg(token));
+    return GetContent(txt, tagregexp.arg(token, "div"));
 }
 
 QString HTMLHelper::GetImgSrc(const QString &txt)
 {
-        return GetContent(txt, divregexp3);
+        auto a = GetContent(txt, imgsource);
+        return a;
 }
 
 QTime HTMLHelper::GetTime(const QString &txt)
@@ -40,35 +58,46 @@ QTime HTMLHelper::GetTime(const QString &txt)
     return t;
 }
 
-QString HTMLHelper::GetNestedDivContent(const QString &txt, const QString& token)
-{    
-    if(token.isEmpty()) return{};
-    QRegularExpression rx(divregexp2.arg(token));
-    auto m = rx.match(txt);
-    if(!m.hasMatch())return {};
+QStringList HTMLHelper::GetNestedTagContent(const QString &txt, const QString& tag, const QString& token)
+{        
+    if(tag.isEmpty()) return{};
 
-    int ix1 = m.capturedStart();
-    //auto txt3=txt.mid(ix1,50);
-    int i=0;
-    //int j=1;
-    int ixd=ix1+3;
-    while(ixd!=-1){
-       ixd=txt.indexOf("div",ixd);
-       if(ixd==-1) break;
-       //j++;
-    //           auto txt5=txt.mid(ixd,50);
-    //           if(j>170){
+    QRegularExpression rx(tagregexp21.arg(token,tag));
+    QStringList s;
+    int ixc = 0;
+    bool selfClosing = _selfClosingTags.contains(tag);
+    while(ixc!=-1){
+        auto m = rx.match(txt,ixc);
+        if(!m.hasMatch()) break;
 
-    //               zInfo("hutty");
-
-    //           }
-       auto c = txt[ixd-1];
-       if(c=='<')i++;
-       else if(c=='/') i--;
-       if(i==0) break;
-       ixd+=3;
+        int ix1 = m.capturedStart();
+        int i=0;
+        int ixd=ix1+1;//tag.length();
+        while(ixd!=-1){
+           if(selfClosing)
+           {
+               ixd = txt.indexOf('>',ixd);
+           }else{
+               ixd=txt.indexOf(tag,ixd);
+           }
+           if(ixd==-1) break;
+           auto c = txt[ixd-1];
+           if(c=='<')i++;
+           else if(c=='/') i--;
+           if(i==0) break;
+           if(selfClosing){
+               ixd++;
+           }else{
+               ixd+=tag.length();
+           }
+        }
+        if(ixd==-1){
+            s.append(txt.mid(ix1));
+            break;
+        };
+        ixd=txt.indexOf('>',ixd);
+        s.append(txt.mid(ix1,ixd-ix1+1));
+        ixc=ixd;
     }
-    //auto txt4=txt.mid(ixd,50);
-    auto txt2=txt.mid(ix1,ixd-ix1);
-    return txt2;
+    return s;
 }

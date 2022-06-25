@@ -18,27 +18,33 @@ void MainPresenter::appendView(IMainView *w)
 
     auto *view_obj = dynamic_cast<QObject*>(w);
 
-
+    //1//checkin <- (view)actions - (presenter)processActions
     QObject::connect(view_obj, SIGNAL(GetConnectionActionTriggered(IMainView*)),
                      this, SLOT(processGetConnectionAction(IMainView*)));
-
+    //2//apiver
     QObject::connect(view_obj, SIGNAL(GetApiverActionTriggered(IMainView*)),
                      this, SLOT(processGetApiverAction(IMainView*)));
-
+    //3//features
     QObject::connect(view_obj, SIGNAL(GetFeatureRequestActionTriggered(IMainView*)),
                      this, SLOT(processGetFeatureRequestAction(IMainView*)));
-
+    //4//media
     QObject::connect(view_obj, SIGNAL(MediaRefreshActionTriggered(IMainView*)),
                      this, SLOT(processMediaRefreshAction(IMainView*)));
-
+    //5//device
     QObject::connect(view_obj, SIGNAL(DeviceRefreshActionTriggered(IMainView*)),
                      this, SLOT(processDeviceRefreshAction(IMainView*)));
-
+    //6//calls
     QObject::connect(view_obj, SIGNAL(CallsRefreshActionTriggered(IMainView*)),
                      this, SLOT(processCallsRefreshAction(IMainView*)));
-
+    //7//weather
     QObject::connect(view_obj, SIGNAL(GetCurrentWeatherActionTriggered(IMainView*)),
                      this, SLOT(processGetCurrentWeatherAction(IMainView*)));
+    QObject::connect(view_obj, SIGNAL(GetCurrentWeatherActionTriggered(IMainView*)),
+                     this, SLOT(processGetCurrentWeatherAction(IMainView*)));
+    //8//warning
+    QObject::connect(view_obj, SIGNAL(GetCurrentWarningActionTriggered(IMainView*)),
+                     this, SLOT(processGetCurrentWarningAction(IMainView*)));
+
     //refreshView(w);    
 }
 
@@ -47,16 +53,26 @@ auto MainPresenter::init(const MainPresenterInit& m) -> bool
 {
     _isInited = false;
     _dowork.init({m.settings});
+    // (dowork)ResponseAction - (presenter)onResponseAction
+    //1//checkin
     connect(&_dowork,SIGNAL(ResponseConnectionAction(ResponseModel::Checkin)),
             this,SLOT(onResponseConnectionAction(ResponseModel::Checkin)));
+    //2//apiver
     connect(&_dowork,SIGNAL(ResponseGetApiverAction(ResponseModel::GetApiVer)),
             this,SLOT(onResponseGetApiverAction(ResponseModel::GetApiVer)));
+    //3//features
     connect(&_dowork,SIGNAL(ResponseGetFeatureRequestAction(ResponseModel::GetFeature)),
             this,SLOT(onResponseGetFeatureRequestAction(ResponseModel::GetFeature)));
+    //7//weather
     connect(&_dowork,SIGNAL(ResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather)),
             this,SLOT(onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather)));
+    //7a//weather_icon
     connect(&_dowork,SIGNAL(ResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon)),
             this,SLOT(onResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon)));
+    //8//warning
+    connect(&_dowork,SIGNAL(ResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning)),
+            this,SLOT(onResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning)));
+
     //_result = { Result::State::NotCalculated, -1};
     _isInited = true;
     return true;
@@ -185,7 +201,7 @@ void MainPresenter::processCallsRefreshAction(IMainView *sender)
     sender->set_CallsView(rm);
 }
 
-/*weather*/
+//7//weather
 
 void MainPresenter::processGetCurrentWeatherAction(IMainView *sender){
     auto guid = _dowork.GetCurrentWeather();
@@ -214,6 +230,26 @@ void MainPresenter::onResponseGetCurrentWeatherIconRequestAction(ResponseModel::
     if(_senders.contains(m.guid)){
         ViewModel::CurrentWeatherIcon rm = {m.pixmap};
         _senders[m.guid]->set_CurrentWeatherIconView(rm);
+        _senders.remove(m.guid);
+    }
+}
+
+//8//warning
+
+void MainPresenter::processGetCurrentWarningAction(IMainView *sender){
+    auto guid = _dowork.GetCurrentWarning();
+    _senders.insert(guid,sender);
+}
+
+void MainPresenter::onResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning m)
+{
+    if(_senders.contains(m.guid)){
+        auto sender = _senders[m.guid];
+
+        _dowork.setData(m.currentWarning);
+        ViewModel::CurrentWarning rm = {m.currentWarning};
+
+        sender->set_CurrentWarningView(rm);
         _senders.remove(m.guid);
     }
 }

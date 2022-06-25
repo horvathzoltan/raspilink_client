@@ -18,6 +18,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+// (wiew)action -> (presenter)processAction -> [ (dowork)ResponseAction -> (presenter)onResponseAction -> ] (wiew)set_view
+// ------------                                                                                             --------------
+
     void set_ConnectionView(const ViewModel::ConnectionR& m);
     void set_ApiverView(const ViewModel::Apiver& m);
     void set_FeatureRequestView(const ViewModel::Features& m);
@@ -27,6 +30,7 @@ public:
     void set_DateTime();
     void set_CurrentWeatherView(const ViewModel::CurrentWeather& m);
     void set_CurrentWeatherIconView(const ViewModel::CurrentWeatherIcon& m);
+    void set_CurrentWarningView(const ViewModel::CurrentWarning& m);
 
 signals:
     void GetConnectionActionTriggered(IMainView *sender);
@@ -36,6 +40,7 @@ signals:
     void DeviceRefreshActionTriggered(IMainView *sender);
     void CallsRefreshActionTriggered(IMainView *sender);
     void GetCurrentWeatherActionTriggered(IMainView *sender);
+    void GetCurrentWarningActionTriggered(IMainView *sender);
 
 private slots:
     void onTimerTimeout();

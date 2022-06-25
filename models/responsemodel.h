@@ -45,5 +45,10 @@ namespace ResponseModel{
         QPixmap pixmap;
     };
 
+    struct GetCurrentWarning: public Base{
+        GetCurrentWarning(const QUuid _guid):Base(_guid){};
+        Model::CurrentWarning currentWarning;
+    };
+
 };
 #endif // RESPONSEMODEL_H

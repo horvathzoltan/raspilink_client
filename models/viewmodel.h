@@ -65,6 +65,10 @@ namespace ViewModel
         QPixmap pixmap;
     };
 
+    struct CurrentWarning{
+        Model::CurrentWarning currentwarning;
+    };
+
 };
 
 #endif // VIEWMODEL_H

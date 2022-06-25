@@ -112,3 +112,6 @@ void MainWindow::downloadFinished(QNetworkReply *reply)
     pm.loadFromData(reply->readAll());
     ui->label->setPixmap(pm);
 }
+
+warnings:
+wico-menu -> bgl -> lista, minden bgl 1 db warning

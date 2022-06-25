@@ -99,6 +99,7 @@ void MainWindow::onTimerTimeout()
         emit GetApiverActionTriggered(this);
         emit GetFeatureRequestActionTriggered(this);
         emit GetCurrentWeatherActionTriggered(this);
+        emit GetCurrentWarningActionTriggered(this);
     }
 
     emit GetConnectionActionTriggered(this);
@@ -145,4 +146,14 @@ void MainWindow::set_CurrentWeatherView(const ViewModel::CurrentWeather &m)
 void MainWindow::set_CurrentWeatherIconView(const ViewModel::CurrentWeatherIcon &m)
 {
     ui->label_img->setPixmap(m.pixmap);
+}
+
+void MainWindow::set_CurrentWarningView(const ViewModel::CurrentWarning &m)
+{
+    QString msg;
+    for(auto&w:m.currentwarning.warnings){
+        if(!msg.isEmpty()) msg+=", ";
+        msg+=w.title+": "+QString::number(w.value);
+    }
+    ui->label_warnings->setText(msg);
 }
