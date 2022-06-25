@@ -334,9 +334,10 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
         if(!divs.isEmpty())
         {
             auto div = divs.first();
+            //auto uls = HTMLHelper::GetNestedTagContent(div, {"ul","li"}, "");
             auto uls = HTMLHelper::GetNestedTagContent(div, "ul", "");
             auto ul = uls.first();
-            auto lis = HTMLHelper::GetNestedTagContent(ul, _currentWarningKeys.tag, "");
+            auto lis = HTMLHelper::GetNestedTagContent(ul, "li", "");//_currentWarningKeys.tag
 
             for(auto&li:lis){
                 Model::Warning w;
