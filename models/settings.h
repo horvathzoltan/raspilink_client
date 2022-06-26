@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include <QString>
+#include <QStringList>
 
 
 
@@ -28,10 +29,10 @@ public:
 
     struct CurrentWarning{
         QString div;
-        QString tag;
+        QStringList tags;
         QString title;
-        QString icon;
-        QString level_icon;
+        //QString icon;
+        //QString level_icon;
         QString map;
     };
 

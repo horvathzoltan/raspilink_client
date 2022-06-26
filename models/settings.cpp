@@ -64,10 +64,11 @@ Settings Settings::Load(const QString& dir)
     s.currentWeather.sunset=q.value("sunset").toString();
 
     s.currentWarning.div=q.value("warning-div").toString();
-    s.currentWarning.tag=q.value("warning-tag").toString();
+    s.currentWarning.tags = q.value("warning-tag").toStringList();
+    //s.currentWarning.tag=q.value("warning-tag").toString();
     s.currentWarning.title=q.value("warning-title").toString();
-    s.currentWarning.icon=q.value("warning-icon").toString();
-    s.currentWarning.level_icon=q.value("warning-level-icon").toString();
+    //s.currentWarning.icon=q.value("warning-icon").toString();
+    //s.currentWarning.level_icon=q.value("warning-level-icon").toString();
     s.currentWarning.map=q.value("warning-map").toString();
     return s;
 }

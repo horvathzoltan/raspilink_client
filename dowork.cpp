@@ -331,19 +331,18 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
         r.msg = "no response";
     } else{
         auto divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.div);
+        auto divs2 = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.div);
         if(!divs.isEmpty())
         {
+            //auto tag_txt_list = _currentWarningKeys.tags.split(',');
+            QList<HTMLHelper::Tag> tags;
+            for(auto&t:_currentWarningKeys.tags){tags.append({.tag=t,.desc=""});}
             auto div = divs.first();
-            //auto uls = HTMLHelper::GetNestedTagContent(div, {"ul","li"}, "");
-            auto uls = HTMLHelper::GetNestedTagContent(div, "ul", "");
-            auto ul = uls.first();
-            auto lis = HTMLHelper::GetNestedTagContent(ul, "li", "");//_currentWarningKeys.tag
+            auto lis = HTMLHelper::GetNestedTagContent(div, tags);
 
             for(auto&li:lis){
                 Model::Warning w;
                 w.title = HTMLHelper::GetDivContent(li, _currentWarningKeys.title).trimmed();
-                //w.icon = HTMLHelper::GetImgSrc(li).trimmed();
-                ///images/warningb/wind.gif
                 auto imgs = HTMLHelper::GetNestedTagContent(li, "img", "");
 
                 if(!imgs.isEmpty()&&imgs.count()>=2){

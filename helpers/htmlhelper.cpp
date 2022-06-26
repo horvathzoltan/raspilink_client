@@ -101,3 +101,20 @@ QStringList HTMLHelper::GetNestedTagContent(const QString &txt, const QString& t
     }
     return s;
 }
+
+QStringList HTMLHelper::GetNestedTagContent(const QString &txt, const QList<Tag>& tags)
+{
+    QStringList es(txt);
+    for(auto&tag:tags)
+    {
+        QStringList a;
+        for(auto&e:es)
+        {
+            a.append(GetNestedTagContent(e, tag.tag, tag.desc));
+        }
+        es=a;
+    }
+
+    return es;
+}
+
