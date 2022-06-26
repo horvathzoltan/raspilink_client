@@ -26,6 +26,7 @@ private:
     QList<IMainView*> _views;
 
     ViewModel::Page GetActivePage(ViewModel::State state);
+    bool IsGoWarningPage(const Model::CurrentWarning& w);
 
 private slots:
     // (wiew)action -> (presenter)processAction -> [ (dowork)ResponseAction -> (presenter)onResponseAction -> ] (wiew)set_view
@@ -52,6 +53,7 @@ private slots:
     //8//warning
     void processGetCurrentWarningAction(IMainView *sender);
     void onResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning);
+    void onResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap);
 
 private:
     bool _isInited = false;

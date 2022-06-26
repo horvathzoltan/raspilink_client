@@ -31,6 +31,7 @@ public:
     void set_CurrentWeatherView(const ViewModel::CurrentWeather& m);
     void set_CurrentWeatherIconView(const ViewModel::CurrentWeatherIcon& m);
     void set_CurrentWarningView(const ViewModel::CurrentWarning& m);
+    void set_CurrentWarningMapView(const ViewModel::CurrentWarningMap& m);
 
 signals:
     void GetConnectionActionTriggered(IMainView *sender);

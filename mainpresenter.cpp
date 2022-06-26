@@ -72,6 +72,9 @@ auto MainPresenter::init(const MainPresenterInit& m) -> bool
     //8//warning
     connect(&_dowork,SIGNAL(ResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning)),
             this,SLOT(onResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning)));
+    //8a//warning_map
+    connect(&_dowork,SIGNAL(ResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap)),
+            this,SLOT(onResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap)));
 
     //_result = { Result::State::NotCalculated, -1};
     _isInited = true;
@@ -246,10 +249,36 @@ void MainPresenter::onResponseGetCurrentWarningRequestAction(ResponseModel::GetC
     if(_senders.contains(m.guid)){
         auto sender = _senders[m.guid];
 
+        bool a = IsGoWarningPage(m.currentWarning);
+
         _dowork.setData(m.currentWarning);
+
         ViewModel::CurrentWarning rm = {m.currentWarning};
 
         sender->set_CurrentWarningView(rm);
+        _senders.remove(m.guid);
+        auto guid_icon = _dowork.GetCurrentWarningMap(m.currentWarning.map);
+        _senders.insert(guid_icon,sender);
+    }
+}
+
+bool MainPresenter::IsGoWarningPage(const Model::CurrentWarning& m){
+    bool go;
+
+//    auto cw = _dowork.currentWarning();
+//    for(auto&w:m.warnings){
+//        if(cw)
+//    }
+
+
+    return go;
+}
+
+void MainPresenter::onResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap m)
+{
+    if(_senders.contains(m.guid)){
+        ViewModel::CurrentWarningMap rm = {m.pixmap};
+        _senders[m.guid]->set_CurrentWarningMapView(rm);
         _senders.remove(m.guid);
     }
 }

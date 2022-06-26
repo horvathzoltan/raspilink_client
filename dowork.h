@@ -30,6 +30,10 @@ private:
     static const QString CURRENTWEATHER;
     static const QString CURRENTWEATHERICON;
     static const QString CURRENTWARNING;
+    static const QString CURRENTWARNINGMAP;
+
+    static const QMap<int, QString> warningLevelDescriptions;
+
     //enum GetRequestType{checkin, apiver};
 public:
     explicit DoWork(QObject *parent = nullptr);   
@@ -55,6 +59,7 @@ public:
 
     QUuid GetCurrentWeather();
     QUuid GetCurrentWeatherIcon(const QString& iconpath);
+    QUuid GetCurrentWarningMap(const QString& iconpath);
 
     QUuid GetCurrentWarning();
 
@@ -97,6 +102,7 @@ private:
     void GetCurrentWeatherIconResponse(const QUuid& guid, QByteArray s);
     //8//warning
     void GetCurrentWarningResponse(const QUuid& guid, QByteArray s);
+    void GetCurrentWarningMapResponse(const QUuid& guid, QByteArray s);
 
 // (wiew)action -> (presenter)processAction -> [ (dowork)ResponseAction -> (presenter)onResponseAction -> ] (wiew)set_view
 //                                               ----------------------
@@ -113,6 +119,8 @@ signals:
     void ResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon);
     //8//warning
     void ResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning);
+
+    void ResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap);
 
 private slots:
     void ResponseOkAction(const QUuid& guid, const QString& action, QByteArray s);

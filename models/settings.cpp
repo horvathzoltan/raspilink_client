@@ -69,7 +69,9 @@ Settings Settings::Load(const QString& dir)
     s.currentWarning.title=q.value("warning-title").toString();
     //s.currentWarning.icon=q.value("warning-icon").toString();
     //s.currentWarning.level_icon=q.value("warning-level-icon").toString();
+    s.currentWarning.map_div=q.value("warning-map-div").toString();
     s.currentWarning.map=q.value("warning-map").toString();
+    s.currentWarning.uvB_div=q.value("warning-uvb-div").toString();
     return s;
 }
 

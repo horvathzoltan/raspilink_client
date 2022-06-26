@@ -1,5 +1,10 @@
 #include "model.h"
 
+//const QMap<int, QString> warningLevelDescriptions = {
+//    {1,"Első szint (sárga), Az ebbe a kategóriába sorolt időjárási események nem szokatlanok, de potenciális veszélyt jelenthetnek, ezért tanácsos elővigyázatosnak, óvatosnak lenni, főként az időjárási hatásoknak jobban kitett tevékenységek során. Különösen a bizonytalanabb kimenetelű, gyorsan változó időjárási helyzetekben célszerű a szokásosnál gyakrabban és részletesebben tájékozódni a várható időjárás felől."},
+//    {2,"Második szint (narancs) Veszélyt hordozó időjárási jelenség, amely káreseményekhez vezethet, vagy akár személyi sérülést, balesetet is okozhat. Érvényben lévő veszélyjelzés esetén legyünk nagyon körültekintőek, vigyázzunk saját biztonságunkra és értékeinkre. Részletesen tájékozódjunk az időjárás alakulásáról. Kövessük a megbízható média által közvetített tanácsokat, illetve a hatóságok utasításait."},
+//    {3,"Harmadik szint (piros) Veszélyes, komoly károkat okozó, sok esetben emberi életet is fenyegető időjárási jelenségek, amelyek rendszerint kiterjedt területeket érintenek. Érvényben lévő veszélyjelzés esetén legyünk különös figyelemmel értékeinkre és saját biztonságunkra. Folyamatosan kísérjük figyelemmel a legfrissebb hivatalos meteorológiai információkat. Minden körülmények között kövessük a hatóságok utasításait. Tartózkodjunk biztonságos helyen. A veszélyjelzés e legmagasabb (piros) szintjére már csak a meglehetősen ritkán előforduló események kerülnek."}
+//};
 
 Model::ApiVer Model::ApiVer::JsonParse(const QJsonObject& j)
 {

@@ -32,8 +32,9 @@ public:
         QStringList tags;
         QString title;
         //QString icon;
-        //QString level_icon;
+        QString map_div;
         QString map;
+        QString uvB_div;
     };
 
     CurrentWarning currentWarning;

@@ -67,8 +67,12 @@ namespace ViewModel
 
     struct CurrentWarning{
         Model::CurrentWarning currentwarning;
+        bool goToWarningPage=false;
     };
 
+    struct CurrentWarningMap{
+        QPixmap pixmap;
+    };
 };
 
 #endif // VIEWMODEL_H

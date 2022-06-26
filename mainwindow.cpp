@@ -152,8 +152,18 @@ void MainWindow::set_CurrentWarningView(const ViewModel::CurrentWarning &m)
 {
     QString msg;
     for(auto&w:m.currentwarning.warnings){
+        if(w.value<1) continue;
         if(!msg.isEmpty()) msg+=", ";
         msg+=w.title+": "+QString::number(w.value);
     }
+    if(m.currentwarning.uvBlevel>0){
+        if(!msg.isEmpty()) msg+=", ";
+        msg+="uvB: "+QString::number(m.currentwarning.uvBlevel);
+    }
     ui->label_warnings->setText(msg);
+}
+
+void MainWindow::set_CurrentWarningMapView(const ViewModel::CurrentWarningMap &m)
+{
+    ui->label_warning_map->setPixmap(m.pixmap);
 }

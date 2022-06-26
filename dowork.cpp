@@ -30,6 +30,13 @@ const QString DoWork::MEDIA_BACK = QStringLiteral("/media/back");
 const QString DoWork::CURRENTWEATHER = QStringLiteral("#CURRENTWEATHER");
 const QString DoWork::CURRENTWEATHERICON = QStringLiteral("#CURRENTWEATHERICON");
 const QString DoWork::CURRENTWARNING = QStringLiteral("#CURRENTWARNING");
+const QString DoWork::CURRENTWARNINGMAP = QStringLiteral("#CURRENTWARNINGMAP");
+
+const QMap<int, QString> DoWork::warningLevelDescriptions{
+    {1,"Első szint (sárga), Az ebbe a kategóriába sorolt időjárási események nem szokatlanok, de potenciális veszélyt jelenthetnek, ezért tanácsos elővigyázatosnak, óvatosnak lenni, főként az időjárási hatásoknak jobban kitett tevékenységek során. Különösen a bizonytalanabb kimenetelű, gyorsan változó időjárási helyzetekben célszerű a szokásosnál gyakrabban és részletesebben tájékozódni a várható időjárás felől."},
+    {2,"Második szint (narancs) Veszélyt hordozó időjárási jelenség, amely káreseményekhez vezethet, vagy akár személyi sérülést, balesetet is okozhat. Érvényben lévő veszélyjelzés esetén legyünk nagyon körültekintőek, vigyázzunk saját biztonságunkra és értékeinkre. Részletesen tájékozódjunk az időjárás alakulásáról. Kövessük a megbízható média által közvetített tanácsokat, illetve a hatóságok utasításait."},
+    {3,"Harmadik szint (piros) Veszélyes, komoly károkat okozó, sok esetben emberi életet is fenyegető időjárási jelenségek, amelyek rendszerint kiterjedt területeket érintenek. Érvényben lévő veszélyjelzés esetén legyünk különös figyelemmel értékeinkre és saját biztonságunkra. Folyamatosan kísérjük figyelemmel a legfrissebb hivatalos meteorológiai információkat. Minden körülmények között kövessük a hatóságok utasításait. Tartózkodjunk biztonságos helyen. A veszélyjelzés e legmagasabb (piros) szintjére már csak a meglehetősen ritkán előforduló események kerülnek."}
+};
 
 DoWork::DoWork(QObject *parent) :QObject(parent)
 {
@@ -47,12 +54,12 @@ auto DoWork::init(const DoWorkInit& m) -> bool
     if(!_httpHelper_idokep.init(m.settings.host_idokep, -1)) return _isInited;
     if(!_httpHelper_met.init(m.settings.host_met, -1)) return _isInited;
 
-    QObject::connect(&_httpHelper, SIGNAL(ResponseOk(const QUuid&, const QString&, QByteArray)),
-                     this, SLOT(ResponseOkAction(const QUuid&, const QString&, QByteArray)));
-    QObject::connect(&_httpHelper_idokep, SIGNAL(ResponseOk(const QUuid&, const QString&, QByteArray)),
-                     this, SLOT(ResponseOkAction(const QUuid&, const QString&, QByteArray)));
-    QObject::connect(&_httpHelper_met, SIGNAL(ResponseOk(const QUuid&, const QString&, QByteArray)),
-                     this, SLOT(ResponseOkAction(const QUuid&, const QString&, QByteArray)));
+    QObject::connect(&_httpHelper, SIGNAL(ResponseOk(QUuid,QString,QByteArray)),
+                     this, SLOT(ResponseOkAction(QUuid,QString,QByteArray)));
+    QObject::connect(&_httpHelper_idokep, SIGNAL(ResponseOk(QUuid,QString,QByteArray)),
+                     this, SLOT(ResponseOkAction(QUuid,QString,QByteArray)));
+    QObject::connect(&_httpHelper_met, SIGNAL(ResponseOk(QUuid,QString,QByteArray)),
+                     this, SLOT(ResponseOkAction(QUuid,QString,QByteArray)));
 
 
     _isInited = true;
@@ -182,8 +189,9 @@ void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteAr
     else if(action==APIVER) GetApiverResponse(guid,s);
     else if(action==FEATURE_REQUEST) GetFeatureRequestResponse(guid,s);
     else if(action==CURRENTWEATHER) GetCurrentWeatherResponse(guid,s);
-    else if(action==CURRENTWEATHERICON) GetCurrentWeatherIconResponse(guid,s);
+    else if(action==CURRENTWEATHERICON) GetCurrentWeatherIconResponse(guid,s);    
     else if(action==CURRENTWARNING) GetCurrentWarningResponse(guid,s);
+    else if(action==CURRENTWARNINGMAP) GetCurrentWarningMapResponse(guid,s);
     else zInfo("unknown action: "+action);
 }
 
@@ -331,7 +339,8 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
         r.msg = "no response";
     } else{
         auto divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.div);
-        auto divs2 = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.div);
+        auto map_divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.map_div);
+        auto uv_divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.uvB_div);
         if(!divs.isEmpty())
         {
             //auto tag_txt_list = _currentWarningKeys.tags.split(',');
@@ -339,9 +348,10 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
             for(auto&t:_currentWarningKeys.tags){tags.append({.tag=t,.desc=""});}
             auto div = divs.first();
             auto lis = HTMLHelper::GetNestedTagContent(div, tags);
-
+            int i=0;
             for(auto&li:lis){
                 Model::Warning w;
+                w.index=i++;
                 w.title = HTMLHelper::GetDivContent(li, _currentWarningKeys.title).trimmed();
                 auto imgs = HTMLHelper::GetNestedTagContent(li, "img", "");
 
@@ -353,14 +363,42 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
                          w.value = Model::Warning::ParseValue(w.value_icon);
                      }
                 }
-                r.currentWarning.warnings.append(w);
+                r.currentWarning.warnings.insert(w.title, w);
             }         
 
             zInfo("CurrentWarning: "+QString::number(r.currentWarning.warnings.count()));
             r.msg = "hutty3";
 
         }
+        if(!map_divs.isEmpty()){
+            auto cw2=map_divs.first();
+            r.currentWarning.map = HTMLHelper::GetImgSrc(cw2).trimmed();
+        }
+        if(!uv_divs.isEmpty()){
+            auto cw2=uv_divs.first();
+            auto uvBicon = HTMLHelper::GetImgSrc(cw2).trimmed();
+            if(!uvBicon.isEmpty())
+            {
+                r.currentWarning.uvBlevel = Model::Warning::ParseValue(uvBicon);
+            }
+        }
+
     }
 
     emit ResponseGetCurrentWarningRequestAction(r);
+}
+
+//GetCurrentWarningMap
+QUuid DoWork::GetCurrentWarningMap(const QString& iconpath)
+{
+    return _httpHelper_met.DownloadFromHost(CURRENTWARNINGMAP, iconpath);
+}
+
+void DoWork::GetCurrentWarningMapResponse(const QUuid& guid, QByteArray s){
+
+    ResponseModel::GetCurrentWarningMap r(guid);
+    QPixmap pm;
+    pm.loadFromData(s);
+    r.pixmap = pm;
+    emit ResponseGetCurrentWarningMapRequestAction(r);
 }

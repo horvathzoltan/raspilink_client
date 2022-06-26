@@ -35,6 +35,7 @@ public:
     //8//warning
     virtual void GetCurrentWarningActionTriggered(IMainView *sender) =0;
     virtual void set_CurrentWarningView(const ViewModel::CurrentWarning& m) = 0;
+    virtual void set_CurrentWarningMapView(const ViewModel::CurrentWarningMap& m) = 0;
 };
 
 #endif // IMAINVIEW_H
