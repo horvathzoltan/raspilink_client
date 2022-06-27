@@ -29,55 +29,13 @@ const QString DoWork::MEDIA_BACK = QStringLiteral("/media/back");
 
 const QString DoWork::CURRENTWEATHER = QStringLiteral("#CURRENTWEATHER");
 const QString DoWork::CURRENTWEATHERICON = QStringLiteral("#CURRENTWEATHERICON");
+
+const QString DoWork::CURRENTALERT = QStringLiteral("#CURRENTALERT");
+const QString DoWork::CURRENTALERTMAP = QStringLiteral("#CURRENTALERTMAP");
 const QString DoWork::CURRENTWARNING = QStringLiteral("#CURRENTWARNING");
 const QString DoWork::CURRENTWARNINGMAP = QStringLiteral("#CURRENTWARNINGMAP");
 
-const QMap<int, QString> DoWork::warningLevelDescriptions{
-    {1,"Első szint (sárga), Az ebbe a kategóriába sorolt időjárási események nem szokatlanok, de potenciális veszélyt jelenthetnek, ezért tanácsos elővigyázatosnak, óvatosnak lenni, főként az időjárási hatásoknak jobban kitett tevékenységek során. Különösen a bizonytalanabb kimenetelű, gyorsan változó időjárási helyzetekben célszerű a szokásosnál gyakrabban és részletesebben tájékozódni a várható időjárás felől."},
-    {2,"Második szint (narancs) Veszélyt hordozó időjárási jelenség, amely káreseményekhez vezethet, vagy akár személyi sérülést, balesetet is okozhat. Érvényben lévő veszélyjelzés esetén legyünk nagyon körültekintőek, vigyázzunk saját biztonságunkra és értékeinkre. Részletesen tájékozódjunk az időjárás alakulásáról. Kövessük a megbízható média által közvetített tanácsokat, illetve a hatóságok utasításait."},
-    {3,"Harmadik szint (piros) Veszélyes, komoly károkat okozó, sok esetben emberi életet is fenyegető időjárási jelenségek, amelyek rendszerint kiterjedt területeket érintenek. Érvényben lévő veszélyjelzés esetén legyünk különös figyelemmel értékeinkre és saját biztonságunkra. Folyamatosan kísérjük figyelemmel a legfrissebb hivatalos meteorológiai információkat. Minden körülmények között kövessük a hatóságok utasításait. Tartózkodjunk biztonságos helyen. A veszélyjelzés e legmagasabb (piros) szintjére már csak a meglehetősen ritkán előforduló események kerülnek."}
-};
 
-QMap<Model::WarningKeys, Model::WarningMeta> warningMeta
-{
-    {Model::WarningKeys::ts,{ .title="Zivatar",.iconMask="ts%1.gif",.description= {
-                {1,"Figyelem! Zivatar alakulhat ki. Elsődleges veszélyforrást a villámlás jelent, emellett esetenként szélerősödés, jégeső előfordulhat!"},
-                {2,"Veszély! Hevesebb zivatarok kialakulására lehet számítani. A villámlások mellett kockázatot jelent a zivatarokat kísérő szél, jégeső is!"},
-                {3,"Fokozott veszély! Heves zivatarok várhatók! A zivatarokat kísérő szél, jégeső is jelentős kockázatot jelent!"}}}},
-    {Model::WarningKeys::rainstorm, { .title="Felhőszakadás",.iconMask="ts%1.gif",.description= {
-                {1,"Intenzív záporból, zivatarból rövid idő alatt 25-30 mm-t meghaladó csapadék hullhat."},
-                {2,"Intenzív záporból, zivatarból rövid idő alatt 50 mm-t meghaladó csapadék hullhat."}}}},
-    {Model::WarningKeys::wind, { .title="Széllökés",.iconMask="wind%1.gif",.description={
-                {1,"A várt legerősebb széllökések meghaladhatják a 70 km/h-t."},
-                {2,"A várt legerősebb széllökések meghaladhatják a 90 km/h-t."},
-                {3,"A várt legerősebb széllökések meghaladhatják a 110 km/h-t."}}}},
-    {Model::WarningKeys::fzra, { .title="Ónos eső",.iconMask="fzra%1.gif",.description= {
-                {1,"Gyenge ónos eső. A várt csapadékmennyiség általában néhány tized (> 0,1) mm."},
-                {2,"Tartós (több órás) ónos eső. A várt csapadékmennyiség meghaladhatja az 1 mm-t."},
-                {3,"Tartós (több órás) ónos eső. A várt csapadékmennyiség meghaladhatja az 5 mm-t."}}}},
-    {Model::WarningKeys::snowdrift, { .title="Hófúvás",.iconMask="snowdrift%1.gif",.description={
-                {1,"Gyenge hófúvás. A friss hóval fedett területeken a szél alacsony hótorlaszokat emelhet."},
-                {2,"Hófúvás. A friss hóval fedett területeken a viharos szél magas hótorlaszokat emelhet."},
-                {3,"Erős hófúvás. A friss hóval fedett területeken a viharos szél több helyen jelentős hóakadályokat emel."}}}},
-    {Model::WarningKeys::rain, { .title="Eső",.iconMask="rain%1.gif",.description= {
-                {1,"24 óra alatt több mint 20 mm csapadék hullhat."},
-                {2,"24 óra alatt több mint 30 mm csapadék hullhat."},
-                {3,"24 óra alatt több mint 50 mm csapadék hullhat."}}}},
-    {Model::WarningKeys::snow, { .title="Havazás",.iconMask="snow%1.gif",.description={
-                {1,"12 óra alatt 5 cm-t meghaladó friss hó hullhat."},
-                {2,"24 óra alatt 20 cm-t meghaladó friss hó hullhat."},
-                {3,"24 óra alatt 30 cm-t meghaladó friss hó hullhat."}}}},
-    {Model::WarningKeys::coldx, { .title="Extrém hideg",.iconMask="coldx%1.gif",.description={
-                {1,"A hőmérséklet - 15 °C alá csökkenhet."},
-                {2,"A hőmérséklet - 20 °C alá csökkenhet."},
-                {3,"A hőmérséklet - 25 °C alá csökkenhet."}}}},
-    {Model::WarningKeys::hotx, { .title="Hőség",.iconMask="hotx%1.gif",.description={
-                {1,"A napi középhőmérséklet várhatóan eléri vagy meghaladja a 25 °C-ot."},
-                {2,"A napi középhőmérséklet várhatóan eléri vagy meghaladja a 27 °C-ot."},
-                {3,"A napi középhőmérséklet 29 °C felett alakulhat."}}}},
-    {Model::WarningKeys::fog, { .title="Tartós, sűrű köd",.iconMask="fog%1.gif",.description={
-                {1,"Tartós (> 6 óra) sűrű köd (látástávolság pár száz méter) várható."}}}}
-};
 
 DoWork::DoWork(QObject *parent) :QObject(parent)
 {
@@ -88,12 +46,13 @@ auto DoWork::init(const DoWorkInit& m) -> bool
 {
     _isInited = false;
 
-    _currentWeatherKeys = m.settings.currentWeather;
-    _currentWarningKeys = m.settings.currentWarning;
+    _currentWeatherKeys = m.settings._currentWeatherKeys;
+    _currentAlertKeys = m.settings._currentAlertKeys;
+    _currentWarningKeys = m.settings._currentWarningKeys;
 
-    if(!_httpHelper.init(m.settings.host, m.settings.port)) return _isInited;
-    if(!_httpHelper_idokep.init(m.settings.host_idokep, -1)) return _isInited;
-    if(!_httpHelper_met.init(m.settings.host_met, -1)) return _isInited;
+    if(!_httpHelper.init(m.settings._host, m.settings._port)) return _isInited;
+    if(!_httpHelper_idokep.init(m.settings._hostIdokep, -1)) return _isInited;
+    if(!_httpHelper_met.init(m.settings._hostMet, -1)) return _isInited;
 
     QObject::connect(&_httpHelper, SIGNAL(ResponseOk(QUuid,QString,QByteArray)),
                      this, SLOT(ResponseOkAction(QUuid,QString,QByteArray)));
@@ -229,8 +188,13 @@ void DoWork::ResponseOkAction(const QUuid& guid, const QString& action,  QByteAr
     if(action==CHECKIN) GetCheckinResponse(guid,s);
     else if(action==APIVER) GetApiverResponse(guid,s);
     else if(action==FEATURE_REQUEST) GetFeatureRequestResponse(guid,s);
+    //7//weather
     else if(action==CURRENTWEATHER) GetCurrentWeatherResponse(guid,s);
-    else if(action==CURRENTWEATHERICON) GetCurrentWeatherIconResponse(guid,s);    
+    else if(action==CURRENTWEATHERICON) GetCurrentWeatherIconResponse(guid,s);
+    //8//alert
+    else if(action==CURRENTALERT) GetCurrentAlertResponse(guid,s);
+    else if(action==CURRENTALERTMAP) GetCurrentAlertMapResponse(guid,s);
+    //9//warning
     else if(action==CURRENTWARNING) GetCurrentWarningResponse(guid,s);
     else if(action==CURRENTWARNINGMAP) GetCurrentWarningMapResponse(guid,s);
     else zInfo("unknown action: "+action);
@@ -365,11 +329,11 @@ void DoWork::GetCurrentWeatherIconResponse(const QUuid& guid, QByteArray s){
     emit ResponseGetCurrentWeatherIconRequestAction(r);
 }
 
-/*warning*/
+//8//alert
 
-QUuid DoWork::GetCurrentWarning()
+QUuid DoWork::GetCurrentAlert()
 {
-    return _httpHelper_met.GetAction(CURRENTWARNING);
+    return _httpHelper_met.GetAction(CURRENTALERT);
 }
 
 Model::WarningKeys DoWork::ParseWarningKeys(const QString& txt){
@@ -387,7 +351,91 @@ Model::WarningKeys DoWork::ParseWarningKeys(const QString& txt){
     return Model::unknown;
 }
 
+void DoWork::GetCurrentAlertResponse(const QUuid& guid, QByteArray s){
+    if(!_currentAlertKeys.isValid()) return;
+
+    QString txt(s);
+    ResponseModel::GetCurrentAlert r(guid);
+
+    if(txt.isEmpty()){
+        r.msg = "no response";
+    } else{
+        auto divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentAlertKeys.div);
+        auto map_divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentAlertKeys.map_div);
+        auto uv_divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentAlertKeys.uvB_div);
+        if(!divs.isEmpty())
+        {
+            //auto tag_txt_list = _currentWarningKeys.tags.split(',');
+            QList<HTMLHelper::Tag> tags;
+            for(auto&t:_currentAlertKeys.tags){tags.append({.tag=t,.desc=""});}
+            auto div = divs.first();
+            auto lis = HTMLHelper::GetNestedTagContent(div, tags);
+            int i=0;
+            for(auto&li:lis){
+                Model::Warning w;
+                w.index=i++;
+                w.title = HTMLHelper::GetDivContent(li, _currentAlertKeys.title).trimmed();
+                auto imgs = HTMLHelper::GetNestedTagContent(li, "img", "");
+
+                if(!imgs.isEmpty()&&imgs.count()>=2){
+                     w.icon = HTMLHelper::GetImgSrc(imgs[0]).trimmed();
+                     w.value_icon = HTMLHelper::GetImgSrc(imgs[1]).trimmed();
+                     if(!w.value_icon.isEmpty())
+                     {
+                         w.value = Model::Warning::ParseValue(w.value_icon);
+                         auto k1 = Model::Warning::ParseKey(w.icon);
+                         w.key = ParseWarningKeys(k1);
+                     }
+                }
+                r.currentAlert.alerts.insert(w.key, w);
+            }         
+
+            zInfo("CurrentWarning: "+QString::number(r.currentAlert.alerts.count()));
+            r.msg = "hutty3";
+
+        }
+        if(!map_divs.isEmpty()){
+            auto cw2=map_divs.first();
+            r.currentAlert.map = HTMLHelper::GetImgSrc(cw2).trimmed();
+        }
+        if(!uv_divs.isEmpty()){
+            auto cw2=uv_divs.first();
+            auto uvBicon = HTMLHelper::GetImgSrc(cw2).trimmed();
+            if(!uvBicon.isEmpty())
+            {
+                r.currentAlert.uvBlevel = Model::Warning::ParseValue(uvBicon);
+            }
+        }
+
+    }
+
+    emit ResponseGetCurrentAlertRequestAction(r);
+}
+
+QUuid DoWork::GetCurrentAlertMap(const QString& iconpath)
+{
+    return _httpHelper_met.DownloadFromHost(CURRENTALERTMAP, iconpath);
+}
+
+void DoWork::GetCurrentAlertMapResponse(const QUuid& guid, QByteArray s){
+
+    ResponseModel::GetCurrentAlertMap r(guid);
+    QPixmap pm;
+    pm.loadFromData(s);
+    r.pixmap = pm;
+    emit ResponseGetCurrentAlertMapRequestAction(r);
+}
+
+//9//warning
+
+QUuid DoWork::GetCurrentWarning()
+{
+    return _httpHelper_met.GetAction2(CURRENTWARNING, _currentWarningKeys.query);
+}
+
 void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
+    if(!_currentWarningKeys.isValid()) return;
+
     QString txt(s);
     ResponseModel::GetCurrentWarning r(guid);
 
@@ -396,10 +444,8 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
     } else{
         auto divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.div);
         auto map_divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.map_div);
-        auto uv_divs = HTMLHelper::GetNestedTagContent(txt, "div", _currentWarningKeys.uvB_div);
         if(!divs.isEmpty())
         {
-            //auto tag_txt_list = _currentWarningKeys.tags.split(',');
             QList<HTMLHelper::Tag> tags;
             for(auto&t:_currentWarningKeys.tags){tags.append({.tag=t,.desc=""});}
             auto div = divs.first();
@@ -422,7 +468,7 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
                      }
                 }
                 r.currentWarning.warnings.insert(w.key, w);
-            }         
+            }
 
             zInfo("CurrentWarning: "+QString::number(r.currentWarning.warnings.count()));
             r.msg = "hutty3";
@@ -430,17 +476,15 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
         }
         if(!map_divs.isEmpty()){
             auto cw2=map_divs.first();
-            r.currentWarning.map = HTMLHelper::GetImgSrc(cw2).trimmed();
-        }
-        if(!uv_divs.isEmpty()){
-            auto cw2=uv_divs.first();
-            auto uvBicon = HTMLHelper::GetImgSrc(cw2).trimmed();
-            if(!uvBicon.isEmpty())
-            {
-                r.currentWarning.uvBlevel = Model::Warning::ParseValue(uvBicon);
-            }
-        }
+            auto imgs = HTMLHelper::GetNestedTagContent(cw2, "img", "");
+            zInfo("warning_maps:"+QString::number(imgs.count()));
+            auto cw3=imgs.first();
 
+            auto map = HTMLHelper::GetImgSrc(cw3).trimmed();
+            auto k1 = Model::Warning::ParseKey(map);
+            auto key = ParseWarningKeys(k1);
+            r.currentWarning.maps.insert(key, map);
+        }
     }
 
     emit ResponseGetCurrentWarningRequestAction(r);

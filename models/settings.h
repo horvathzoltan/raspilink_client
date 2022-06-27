@@ -9,12 +9,12 @@
 class Settings
 {
 public:
-    QString host;
-    int port=-1;
-    QString host_idokep;
-    QString host_met;
+    QString _host;
+    int _port=-1;
+    QString _hostIdokep;
+    QString _hostMet;
 
-    struct CurrentWeather{
+    struct CurrentWeatherKeys{
         QString div;
         QString shortDesc;
         QString title;
@@ -25,19 +25,33 @@ public:
         QString sunset;
     };
 
-    CurrentWeather currentWeather;
+    CurrentWeatherKeys _currentWeatherKeys;
 
-    struct CurrentWarning{
+    struct CurrentAlertKeys{
         QString div;
         QStringList tags;
         QString title;
-        //QString icon;
         QString map_div;
         QString map;
         QString uvB_div;
+
+        bool isValid();
     };
 
-    CurrentWarning currentWarning;
+    CurrentAlertKeys _currentAlertKeys;
+
+    struct CurrentWarningKeys{
+        QString div;
+        QString query;
+        QStringList tags;
+        QString title;
+        QString map_div;
+        QString map;
+
+        bool isValid();
+    };
+
+    CurrentWarningKeys _currentWarningKeys;
 
     Settings();
     static Settings Load(const QString& dir);

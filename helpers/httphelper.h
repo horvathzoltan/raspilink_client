@@ -20,7 +20,8 @@ public:
 
     void SendPost(const QString& source_lang, const QString& dest_lang, const QString& msg);
 
-    QUuid GetAction(const QString& action);
+    QUuid GetAction(const QString& action);//, const QString& query={});
+    QUuid GetAction2(const QString& action, const QString& query);
     QUuid Download(const QString& action, const QString &url);
     QUuid DownloadFromHost(const QString& action, const QString &path);
 

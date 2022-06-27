@@ -26,6 +26,7 @@ private:
     QList<IMainView*> _views;
 
     ViewModel::Page GetActivePage(ViewModel::State state);
+    bool IsGoAlertPage(const Model::CurrentAlert& w);
     bool IsGoWarningPage(const Model::CurrentWarning& w);
 
 private slots:
@@ -50,7 +51,11 @@ private slots:
     void processGetCurrentWeatherAction(IMainView *sender);    
     void onResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather);    
     void onResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon);
-    //8//warning
+    //8//alert
+    void processGetCurrentAlertAction(IMainView *sender);
+    void onResponseGetCurrentAlertRequestAction(ResponseModel::GetCurrentAlert);
+    void onResponseGetCurrentAlertMapRequestAction(ResponseModel::GetCurrentAlertMap);
+    //9//warning
     void processGetCurrentWarningAction(IMainView *sender);
     void onResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning);
     void onResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap);

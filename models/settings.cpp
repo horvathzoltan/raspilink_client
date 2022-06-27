@@ -48,30 +48,34 @@ Settings Settings::Load(const QString& dir)
 
     Settings s;
 
-    s.host=q.value("host").toString();
-    s.port=q.value("port").toInt();
+    s._host=q.value("host").toString();
+    s._port=q.value("port").toInt();
 
-    s.host_idokep=q.value("host_idokep").toString();
-    s.host_met=q.value("host_met").toString();    
+    s._hostIdokep=q.value("host_idokep").toString();
+    s._hostMet=q.value("host_met").toString();
 
-    s.currentWeather.div=q.value("current-weather-div").toString();
-    s.currentWeather.shortDesc=q.value("current-weather-short-desc").toString();
-    s.currentWeather.title=q.value("current-weather-title").toString();
-    s.currentWeather.value=q.value("current-weather").toString();
-    s.currentWeather.icon=q.value("current-weather-icon").toString();
-    s.currentWeather.temperature=q.value("current-temperature").toString();
-    s.currentWeather.sunrise=q.value("sunrise").toString();
-    s.currentWeather.sunset=q.value("sunset").toString();
+    s._currentWeatherKeys.div=q.value("current-weather-div").toString();
+    s._currentWeatherKeys.shortDesc=q.value("current-weather-short-desc").toString();
+    s._currentWeatherKeys.title=q.value("current-weather-title").toString();
+    s._currentWeatherKeys.value=q.value("current-weather").toString();
+    s._currentWeatherKeys.icon=q.value("current-weather-icon").toString();
+    s._currentWeatherKeys.temperature=q.value("current-temperature").toString();
+    s._currentWeatherKeys.sunrise=q.value("sunrise").toString();
+    s._currentWeatherKeys.sunset=q.value("sunset").toString();
 
-    s.currentWarning.div=q.value("warning-div").toString();
-    s.currentWarning.tags = q.value("warning-tag").toStringList();
-    //s.currentWarning.tag=q.value("warning-tag").toString();
-    s.currentWarning.title=q.value("warning-title").toString();
-    //s.currentWarning.icon=q.value("warning-icon").toString();
-    //s.currentWarning.level_icon=q.value("warning-level-icon").toString();
-    s.currentWarning.map_div=q.value("warning-map-div").toString();
-    s.currentWarning.map=q.value("warning-map").toString();
-    s.currentWarning.uvB_div=q.value("warning-uvb-div").toString();
+    s._currentAlertKeys.div=q.value("alert-div").toString();
+    s._currentAlertKeys.tags = q.value("alert-tag").toStringList();
+    s._currentAlertKeys.title=q.value("alert-title").toString();
+    s._currentAlertKeys.map_div=q.value("alert-map-div").toString();
+    s._currentAlertKeys.map=q.value("alert-map").toString();
+    s._currentAlertKeys.uvB_div=q.value("alert-uvb-div").toString();
+
+    s._currentWarningKeys.div=q.value("warning-div").toString();
+    s._currentWarningKeys.query=q.value("warning-query").toString();
+    s._currentWarningKeys.tags = q.value("warning-tag").toStringList();
+    s._currentWarningKeys.title=q.value("warning-title").toString();
+    s._currentWarningKeys.map_div=q.value("warning-map-div").toString();
+    s._currentWarningKeys.map=q.value("warning-map").toString();
     return s;
 }
 
@@ -79,7 +83,27 @@ Settings Settings::Load(const QString& dir)
 
 bool Settings::isValid()
 {
-    if(host.isEmpty()) return false;
-    if(port<0||port>65535) return false;
+    if(_host.isEmpty()) return false;
+    if(_port<0||_port>65535) return false;
+    return true;
+}
+
+bool Settings::CurrentAlertKeys::isValid(){
+    if(div.isEmpty()) return false;
+    if(tags.isEmpty()) return false;
+    if(title.isEmpty()) return false;
+    if(map_div.isEmpty()) return false;
+    if(map.isEmpty()) return false;
+    if(uvB_div.isEmpty()) return false;
+    return true;
+}
+
+bool Settings::CurrentWarningKeys::isValid(){
+    if(div.isEmpty()) return false;
+    if(query.isEmpty()) return false;
+    if(tags.isEmpty()) return false;
+    if(title.isEmpty()) return false;
+    if(map_div.isEmpty()) return false;
+    if(map.isEmpty()) return false;
     return true;
 }

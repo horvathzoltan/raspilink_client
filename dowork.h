@@ -29,11 +29,12 @@ private:
 
     static const QString CURRENTWEATHER;
     static const QString CURRENTWEATHERICON;
+
+    static const QString CURRENTALERT;
+    static const QString CURRENTALERTMAP;
     static const QString CURRENTWARNING;
     static const QString CURRENTWARNINGMAP;
 
-    static const QMap<int, QString> warningLevelDescriptions;
-    static const QMap<Model::WarningKeys, Model::WarningMeta> warningMeta;
     //enum GetRequestType{checkin, apiver};
 public:
     explicit DoWork(QObject *parent = nullptr);   
@@ -57,11 +58,15 @@ public:
     QUuid GetMediaSkip();
     QUuid GetMediaBack();    
 
+    //7//weather
     QUuid GetCurrentWeather();
-    QUuid GetCurrentWeatherIcon(const QString& iconpath);
-    QUuid GetCurrentWarningMap(const QString& iconpath);
-
+    QUuid GetCurrentWeatherIcon(const QString& iconpath);    
+    //8//alert
+    QUuid GetCurrentAlert();
+    QUuid GetCurrentAlertMap(const QString& iconpath);
+    //9//warning
     QUuid GetCurrentWarning();
+    QUuid GetCurrentWarningMap(const QString& iconpath);
 
     ViewModel::State GetState(const Model::Device& device,
                       const Model::Media& media,
@@ -73,6 +78,7 @@ public:
     void setData(const Model::ApiVer& m){_data.apiVer = m;}
     void setData(const Model::Features& m){_data.features = m;}
     void setData(const Model::CurrentWeather& m){_data.currentWeather = m;}
+    void setData(const Model::CurrentAlert& m){_data.currentAlert = m;}
     void setData(const Model::CurrentWarning& m){_data.currentWarning = m;}
 
     Model::Media media(){ return _data.media; }
@@ -81,6 +87,7 @@ public:
     Model::ApiVer apiVer(){ return _data.apiVer; }
     Model::Features features(){ return _data.features; }
     Model::CurrentWeather currentWeather(){ return _data.currentWeather; }
+    Model::CurrentAlert currentAlert(){ return _data.currentAlert; }
     Model::CurrentWarning currentWarning(){ return _data.currentWarning; }
 
     Model::WarningKeys ParseWarningKeys(const QString& txt);
@@ -90,8 +97,9 @@ private:
     HttpHelper _httpHelper;
     HttpHelper _httpHelper_idokep;
     HttpHelper _httpHelper_met;
-    Settings::CurrentWeather _currentWeatherKeys;
-    Settings::CurrentWarning _currentWarningKeys;
+    Settings::CurrentWeatherKeys _currentWeatherKeys;
+    Settings::CurrentAlertKeys _currentAlertKeys;
+    Settings::CurrentWarningKeys _currentWarningKeys;
 
     Model::Data _data;
 
@@ -99,9 +107,13 @@ private:
     void GetCheckinResponse(const QUuid& guid, QByteArray s);
     void GetApiverResponse(const QUuid& guid, QByteArray s);
     void GetFeatureRequestResponse(const QUuid& guid, QByteArray s);
+    //7//weather
     void GetCurrentWeatherResponse(const QUuid& guid, QByteArray s);
     void GetCurrentWeatherIconResponse(const QUuid& guid, QByteArray s);
-    //8//warning
+    //8//alert
+    void GetCurrentAlertResponse(const QUuid& guid, QByteArray s);
+    void GetCurrentAlertMapResponse(const QUuid& guid, QByteArray s);
+    //9//warning
     void GetCurrentWarningResponse(const QUuid& guid, QByteArray s);
     void GetCurrentWarningMapResponse(const QUuid& guid, QByteArray s);
 
@@ -118,9 +130,11 @@ signals:
     void ResponseGetCurrentWeatherRequestAction(ResponseModel::GetCurrentWeather);
     //7a//weather_icon
     void ResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon);
-    //8//warning
+    //8//aleret
+    void ResponseGetCurrentAlertRequestAction(ResponseModel::GetCurrentAlert);
+    void ResponseGetCurrentAlertMapRequestAction(ResponseModel::GetCurrentAlertMap);
+    //9//warning
     void ResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning);
-
     void ResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap);
 
 private slots:

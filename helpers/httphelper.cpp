@@ -31,11 +31,28 @@ bool HttpHelper::init(const QString& host, int port)
     return _inited;
 }
 
-QUuid HttpHelper::GetAction(const QString& action)
+QUuid HttpHelper::GetAction(const QString& action)//, const QString& query)
 {
     auto mgr = CreateMgr();
     auto guid = RegisterAction(action, mgr);
     if(!action.startsWith('#')) _url.setPath((action.startsWith('/')?action:'/'+action));
+    //_url.setQuery(query);
+    auto request = CreateRequest(_url);
+    mgr->get(request);
+    return guid;
+}
+
+QUuid HttpHelper::GetAction2(const QString& action, const QString& query)
+{
+    auto mgr = CreateMgr();
+    auto guid = RegisterAction(action, mgr);
+    if(!action.startsWith('#')) _url.setPath((action.startsWith('/')?action:'/'+action));
+
+    auto qtxt = _url.query();
+    QUrlQuery q(qtxt);
+    q.addQueryItem("c","b");
+    _url.setQuery(q);
+
     auto request = CreateRequest(_url);
     mgr->get(request);
     return guid;

@@ -6,6 +6,7 @@
 
 namespace Model
 {    
+
     struct ApiVer{
         int major=0;
         int minor = 0;
@@ -114,7 +115,7 @@ namespace Model
         }
 
         static QString ParseKey(const QString& txt){
-            static const QString rtxt = R"(.*\/([^\d]*)(?:\d+)?\.)";
+            static const QString rtxt = R"(\/[^\/]*\W([^\d\/]*)(?:\d+)?\.)";//R"(\/[^\/]*\W([^\d]*)(?:\d+)?\.)";
             static const QRegularExpression rx(rtxt);
 
             auto m = rx.match(txt);
@@ -123,10 +124,15 @@ namespace Model
         }
     };
 
-    struct CurrentWarning{
-        QMap<WarningKeys, Warning> warnings;
+    struct CurrentAlert{
+        QMap<WarningKeys, Warning> alerts;
         QString map;
         int uvBlevel;
+    };
+
+    struct CurrentWarning{
+        QMap<WarningKeys, Warning> warnings;
+        QMap<WarningKeys, QString> maps;
     };
 
     struct Data{
@@ -136,6 +142,7 @@ namespace Model
         Device device;
         Calls calls;
         CurrentWeather currentWeather;
+        CurrentAlert currentAlert;
         CurrentWarning currentWarning;
     };
 
@@ -146,7 +153,10 @@ namespace Model
     };
 
 
-
+    class Descriptions{
+        static const QMap<int, QString> warningLevelDescriptions;
+        static const QMap<Model::WarningKeys, Model::WarningMeta> warningMeta;
+    };
 
     ///images/warning_header/ts1.gif
 

@@ -28,8 +28,13 @@ public:
     void set_DeviceView(const ViewModel::Device& m);
     void set_CallsView(const ViewModel::Calls& m);
     void set_DateTime();
+    //weather
     void set_CurrentWeatherView(const ViewModel::CurrentWeather& m);
     void set_CurrentWeatherIconView(const ViewModel::CurrentWeatherIcon& m);
+    //alert
+    void set_CurrentAlertView(const ViewModel::CurrentAlert& m);
+    void set_CurrentAlertMapView(const ViewModel::CurrentAlertMap& m);
+    //warning
     void set_CurrentWarningView(const ViewModel::CurrentWarning& m);
     void set_CurrentWarningMapView(const ViewModel::CurrentWarningMap& m);
 
@@ -40,7 +45,11 @@ signals:
     void MediaRefreshActionTriggered(IMainView *sender);
     void DeviceRefreshActionTriggered(IMainView *sender);
     void CallsRefreshActionTriggered(IMainView *sender);
+    //weather
     void GetCurrentWeatherActionTriggered(IMainView *sender);
+    //alert
+    void GetCurrentAlertActionTriggered(IMainView *sender);    
+    //warning
     void GetCurrentWarningActionTriggered(IMainView *sender);
 
 private slots:

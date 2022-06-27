@@ -99,6 +99,7 @@ void MainWindow::onTimerTimeout()
         emit GetApiverActionTriggered(this);
         emit GetFeatureRequestActionTriggered(this);
         emit GetCurrentWeatherActionTriggered(this);
+        emit GetCurrentAlertActionTriggered(this);
         emit GetCurrentWarningActionTriggered(this);
     }
 
@@ -148,18 +149,37 @@ void MainWindow::set_CurrentWeatherIconView(const ViewModel::CurrentWeatherIcon 
     ui->label_img->setPixmap(m.pixmap);
 }
 
-void MainWindow::set_CurrentWarningView(const ViewModel::CurrentWarning &m)
+//8//alert
+
+void MainWindow::set_CurrentAlertView(const ViewModel::CurrentAlert& m)
 {
     QString msg;
-    for(auto&w:m.currentwarning.warnings){
+    for(auto&w:m.currentAlert.alerts){
         //if(w.value<1) continue;
         if(!msg.isEmpty()) msg+=", ";
         msg+=w.title+": "+QString::number(w.value);
     }
-    if(m.currentwarning.uvBlevel>0){
+    if(m.currentAlert.uvBlevel>0){
         if(!msg.isEmpty()) msg+=", ";
-        msg+="uvB: "+QString::number(m.currentwarning.uvBlevel);
+        msg+="uvB: "+QString::number(m.currentAlert.uvBlevel);
     }
+    ui->label_alerts->setText(msg);
+}
+
+void MainWindow::set_CurrentAlertMapView(const ViewModel::CurrentAlertMap &m)
+{
+    ui->label_alert_map->setPixmap(m.pixmap);
+}
+//9//warning
+void MainWindow::set_CurrentWarningView(const ViewModel::CurrentWarning& m)
+{
+    QString msg;
+    for(auto&w:m.currentWarning.warnings){
+        //if(w.value<1) continue;
+        if(!msg.isEmpty()) msg+=", ";
+        msg+=w.title+": "+QString::number(w.value);
+    }
+
     ui->label_warnings->setText(msg);
 }
 
@@ -167,3 +187,4 @@ void MainWindow::set_CurrentWarningMapView(const ViewModel::CurrentWarningMap &m
 {
     ui->label_warning_map->setPixmap(m.pixmap);
 }
+

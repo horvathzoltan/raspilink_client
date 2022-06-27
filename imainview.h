@@ -32,7 +32,11 @@ public:
     virtual void GetCurrentWeatherActionTriggered(IMainView *sender) =0;
     virtual void set_CurrentWeatherView(const ViewModel::CurrentWeather& m) = 0;
     virtual void set_CurrentWeatherIconView(const ViewModel::CurrentWeatherIcon& m) = 0;
-    //8//warning
+    //8//alert
+    virtual void GetCurrentAlertActionTriggered(IMainView *sender) =0;
+    virtual void set_CurrentAlertView(const ViewModel::CurrentAlert& m) = 0;
+    virtual void set_CurrentAlertMapView(const ViewModel::CurrentAlertMap& m) = 0;
+    //9//warning
     virtual void GetCurrentWarningActionTriggered(IMainView *sender) =0;
     virtual void set_CurrentWarningView(const ViewModel::CurrentWarning& m) = 0;
     virtual void set_CurrentWarningMapView(const ViewModel::CurrentWarningMap& m) = 0;

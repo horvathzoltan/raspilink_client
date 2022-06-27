@@ -9,7 +9,7 @@
 
 namespace ViewModel
 {
-    enum Page{main, connection, media, calls, noChange};
+    enum Page{main, connection, media, calls, alert,warning,weather, noChange};
     static QString PageToPageName(Page page)
     {
         switch(page){
@@ -17,6 +17,9 @@ namespace ViewModel
         case ViewModel::Page::calls: return "tab_calls";
         case ViewModel::Page::connection: return "tab_connection";
         case ViewModel::Page::media: return "tab_media";
+        case ViewModel::Page::alert: return "tab_media";
+        case ViewModel::Page::warning: return "tab_media";
+        case ViewModel::Page::weather: return "tab_media";
         default: return{};
         }
     }
@@ -65,8 +68,17 @@ namespace ViewModel
         QPixmap pixmap;
     };
 
+    struct CurrentAlert{
+        Model::CurrentAlert currentAlert;
+        bool goToAlertPage=false;
+    };
+
+    struct CurrentAlertMap{
+        QPixmap pixmap;
+    };
+
     struct CurrentWarning{
-        Model::CurrentWarning currentwarning;
+        Model::CurrentWarning currentWarning;
         bool goToWarningPage=false;
     };
 

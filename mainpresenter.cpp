@@ -41,7 +41,11 @@ void MainPresenter::appendView(IMainView *w)
                      this, SLOT(processGetCurrentWeatherAction(IMainView*)));
     QObject::connect(view_obj, SIGNAL(GetCurrentWeatherActionTriggered(IMainView*)),
                      this, SLOT(processGetCurrentWeatherAction(IMainView*)));
-    //8//warning
+    //8//Alert
+    QObject::connect(view_obj, SIGNAL(GetCurrentAlertActionTriggered(IMainView*)),
+                     this, SLOT(processGetCurrentAlertAction(IMainView*)));
+
+    //9//Warning
     QObject::connect(view_obj, SIGNAL(GetCurrentWarningActionTriggered(IMainView*)),
                      this, SLOT(processGetCurrentWarningAction(IMainView*)));
 
@@ -69,13 +73,16 @@ auto MainPresenter::init(const MainPresenterInit& m) -> bool
     //7a//weather_icon
     connect(&_dowork,SIGNAL(ResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon)),
             this,SLOT(onResponseGetCurrentWeatherIconRequestAction(ResponseModel::GetCurrentWeatherIcon)));
-    //8//warning
+    //8//alert
+    connect(&_dowork,SIGNAL(ResponseGetCurrentAlertRequestAction(ResponseModel::GetCurrentAlert)),
+            this,SLOT(onResponseGetCurrentAlertRequestAction(ResponseModel::GetCurrentAlert)));    
+    connect(&_dowork,SIGNAL(ResponseGetCurrentAlertMapRequestAction(ResponseModel::GetCurrentAlertMap)),
+            this,SLOT(onResponseGetCurrentAlertMapRequestAction(ResponseModel::GetCurrentAlertMap)));
+    //9//warning
     connect(&_dowork,SIGNAL(ResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning)),
             this,SLOT(onResponseGetCurrentWarningRequestAction(ResponseModel::GetCurrentWarning)));
-    //8a//warning_map
     connect(&_dowork,SIGNAL(ResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap)),
             this,SLOT(onResponseGetCurrentWarningMapRequestAction(ResponseModel::GetCurrentWarningMap)));
-
     //_result = { Result::State::NotCalculated, -1};
     _isInited = true;
     return true;
@@ -237,7 +244,55 @@ void MainPresenter::onResponseGetCurrentWeatherIconRequestAction(ResponseModel::
     }
 }
 
-//8//warning
+//8//alert
+
+void MainPresenter::processGetCurrentAlertAction(IMainView *sender){
+    auto guid = _dowork.GetCurrentAlert();
+    _senders.insert(guid,sender);
+}
+
+void MainPresenter::onResponseGetCurrentAlertRequestAction(ResponseModel::GetCurrentAlert m)
+{
+    if(_senders.contains(m.guid)){
+        auto sender = _senders[m.guid];
+
+        bool a = IsGoAlertPage(m.currentAlert);
+
+        _dowork.setData(m.currentAlert);
+
+        ViewModel::CurrentAlert rm = {m.currentAlert};
+
+        sender->set_CurrentAlertView(rm);
+        _senders.remove(m.guid);
+        auto guid_icon = _dowork.GetCurrentAlertMap(m.currentAlert.map);
+        _senders.insert(guid_icon,sender);
+    }
+}
+
+bool MainPresenter::IsGoAlertPage(const Model::CurrentAlert& m){
+    bool go;
+
+    auto prev_m = _dowork.currentAlert().alerts;
+    for(auto&w:m.alerts){
+        if(prev_m.contains(w.key)){
+
+        }
+    }
+
+
+    return go;
+}
+
+void MainPresenter::onResponseGetCurrentAlertMapRequestAction(ResponseModel::GetCurrentAlertMap m)
+{
+    if(_senders.contains(m.guid)){
+        ViewModel::CurrentAlertMap rm = {m.pixmap};
+        _senders[m.guid]->set_CurrentAlertMapView(rm);
+        _senders.remove(m.guid);
+    }
+}
+
+//9//warning
 
 void MainPresenter::processGetCurrentWarningAction(IMainView *sender){
     auto guid = _dowork.GetCurrentWarning();
@@ -257,7 +312,9 @@ void MainPresenter::onResponseGetCurrentWarningRequestAction(ResponseModel::GetC
 
         sender->set_CurrentWarningView(rm);
         _senders.remove(m.guid);
-        auto guid_icon = _dowork.GetCurrentWarningMap(m.currentWarning.map);
+        // todo 11  összeset leszedni
+        auto map1 = m.currentWarning.maps.first();
+        auto guid_icon = _dowork.GetCurrentWarningMap(map1);
         _senders.insert(guid_icon,sender);
     }
 }

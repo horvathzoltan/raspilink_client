@@ -35,6 +35,7 @@ namespace ResponseModel{
         Model::Features features;
     };
 
+    //7//weather
     struct GetCurrentWeather: public Base{
         GetCurrentWeather(const QUuid _guid):Base(_guid){};
         Model::CurrentWeather currentWeather;
@@ -45,6 +46,18 @@ namespace ResponseModel{
         QPixmap pixmap;
     };
 
+    //8//alert
+    struct GetCurrentAlert: public Base{
+        GetCurrentAlert(const QUuid _guid):Base(_guid){};
+        Model::CurrentAlert currentAlert;
+    };
+
+    struct GetCurrentAlertMap: public Base{
+        GetCurrentAlertMap(const QUuid _guid):Base(_guid){};
+        QPixmap pixmap;
+    };
+
+    //9//warning
     struct GetCurrentWarning: public Base{
         GetCurrentWarning(const QUuid _guid):Base(_guid){};
         Model::CurrentWarning currentWarning;
@@ -54,7 +67,6 @@ namespace ResponseModel{
         GetCurrentWarningMap(const QUuid _guid):Base(_guid){};
         QPixmap pixmap;
     };
-
 
 };
 #endif // RESPONSEMODEL_H
