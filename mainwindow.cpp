@@ -152,7 +152,7 @@ void MainWindow::set_CurrentWarningView(const ViewModel::CurrentWarning &m)
 {
     QString msg;
     for(auto&w:m.currentwarning.warnings){
-        if(w.value<1) continue;
+        //if(w.value<1) continue;
         if(!msg.isEmpty()) msg+=", ";
         msg+=w.title+": "+QString::number(w.value);
     }

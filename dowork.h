@@ -33,7 +33,7 @@ private:
     static const QString CURRENTWARNINGMAP;
 
     static const QMap<int, QString> warningLevelDescriptions;
-
+    static const QMap<Model::WarningKeys, Model::WarningMeta> warningMeta;
     //enum GetRequestType{checkin, apiver};
 public:
     explicit DoWork(QObject *parent = nullptr);   
@@ -83,6 +83,7 @@ public:
     Model::CurrentWeather currentWeather(){ return _data.currentWeather; }
     Model::CurrentWarning currentWarning(){ return _data.currentWarning; }
 
+    Model::WarningKeys ParseWarningKeys(const QString& txt);
 private:
     bool _isInited = false;
     //CommadLineArgs params;

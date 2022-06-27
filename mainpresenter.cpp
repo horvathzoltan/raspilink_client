@@ -265,10 +265,12 @@ void MainPresenter::onResponseGetCurrentWarningRequestAction(ResponseModel::GetC
 bool MainPresenter::IsGoWarningPage(const Model::CurrentWarning& m){
     bool go;
 
-//    auto cw = _dowork.currentWarning();
-//    for(auto&w:m.warnings){
-//        if(cw)
-//    }
+    auto prev_warnings = _dowork.currentWarning().warnings;
+    for(auto&w:m.warnings){
+        if(prev_warnings.contains(w.key)){
+
+        }
+    }
 
 
     return go;

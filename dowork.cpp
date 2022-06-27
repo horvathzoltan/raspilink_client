@@ -38,6 +38,47 @@ const QMap<int, QString> DoWork::warningLevelDescriptions{
     {3,"Harmadik szint (piros) Veszélyes, komoly károkat okozó, sok esetben emberi életet is fenyegető időjárási jelenségek, amelyek rendszerint kiterjedt területeket érintenek. Érvényben lévő veszélyjelzés esetén legyünk különös figyelemmel értékeinkre és saját biztonságunkra. Folyamatosan kísérjük figyelemmel a legfrissebb hivatalos meteorológiai információkat. Minden körülmények között kövessük a hatóságok utasításait. Tartózkodjunk biztonságos helyen. A veszélyjelzés e legmagasabb (piros) szintjére már csak a meglehetősen ritkán előforduló események kerülnek."}
 };
 
+QMap<Model::WarningKeys, Model::WarningMeta> warningMeta
+{
+    {Model::WarningKeys::ts,{ .title="Zivatar",.iconMask="ts%1.gif",.description= {
+                {1,"Figyelem! Zivatar alakulhat ki. Elsődleges veszélyforrást a villámlás jelent, emellett esetenként szélerősödés, jégeső előfordulhat!"},
+                {2,"Veszély! Hevesebb zivatarok kialakulására lehet számítani. A villámlások mellett kockázatot jelent a zivatarokat kísérő szél, jégeső is!"},
+                {3,"Fokozott veszély! Heves zivatarok várhatók! A zivatarokat kísérő szél, jégeső is jelentős kockázatot jelent!"}}}},
+    {Model::WarningKeys::rainstorm, { .title="Felhőszakadás",.iconMask="ts%1.gif",.description= {
+                {1,"Intenzív záporból, zivatarból rövid idő alatt 25-30 mm-t meghaladó csapadék hullhat."},
+                {2,"Intenzív záporból, zivatarból rövid idő alatt 50 mm-t meghaladó csapadék hullhat."}}}},
+    {Model::WarningKeys::wind, { .title="Széllökés",.iconMask="wind%1.gif",.description={
+                {1,"A várt legerősebb széllökések meghaladhatják a 70 km/h-t."},
+                {2,"A várt legerősebb széllökések meghaladhatják a 90 km/h-t."},
+                {3,"A várt legerősebb széllökések meghaladhatják a 110 km/h-t."}}}},
+    {Model::WarningKeys::fzra, { .title="Ónos eső",.iconMask="fzra%1.gif",.description= {
+                {1,"Gyenge ónos eső. A várt csapadékmennyiség általában néhány tized (> 0,1) mm."},
+                {2,"Tartós (több órás) ónos eső. A várt csapadékmennyiség meghaladhatja az 1 mm-t."},
+                {3,"Tartós (több órás) ónos eső. A várt csapadékmennyiség meghaladhatja az 5 mm-t."}}}},
+    {Model::WarningKeys::snowdrift, { .title="Hófúvás",.iconMask="snowdrift%1.gif",.description={
+                {1,"Gyenge hófúvás. A friss hóval fedett területeken a szél alacsony hótorlaszokat emelhet."},
+                {2,"Hófúvás. A friss hóval fedett területeken a viharos szél magas hótorlaszokat emelhet."},
+                {3,"Erős hófúvás. A friss hóval fedett területeken a viharos szél több helyen jelentős hóakadályokat emel."}}}},
+    {Model::WarningKeys::rain, { .title="Eső",.iconMask="rain%1.gif",.description= {
+                {1,"24 óra alatt több mint 20 mm csapadék hullhat."},
+                {2,"24 óra alatt több mint 30 mm csapadék hullhat."},
+                {3,"24 óra alatt több mint 50 mm csapadék hullhat."}}}},
+    {Model::WarningKeys::snow, { .title="Havazás",.iconMask="snow%1.gif",.description={
+                {1,"12 óra alatt 5 cm-t meghaladó friss hó hullhat."},
+                {2,"24 óra alatt 20 cm-t meghaladó friss hó hullhat."},
+                {3,"24 óra alatt 30 cm-t meghaladó friss hó hullhat."}}}},
+    {Model::WarningKeys::coldx, { .title="Extrém hideg",.iconMask="coldx%1.gif",.description={
+                {1,"A hőmérséklet - 15 °C alá csökkenhet."},
+                {2,"A hőmérséklet - 20 °C alá csökkenhet."},
+                {3,"A hőmérséklet - 25 °C alá csökkenhet."}}}},
+    {Model::WarningKeys::hotx, { .title="Hőség",.iconMask="hotx%1.gif",.description={
+                {1,"A napi középhőmérséklet várhatóan eléri vagy meghaladja a 25 °C-ot."},
+                {2,"A napi középhőmérséklet várhatóan eléri vagy meghaladja a 27 °C-ot."},
+                {3,"A napi középhőmérséklet 29 °C felett alakulhat."}}}},
+    {Model::WarningKeys::fog, { .title="Tartós, sűrű köd",.iconMask="fog%1.gif",.description={
+                {1,"Tartós (> 6 óra) sűrű köd (látástávolság pár száz méter) várható."}}}}
+};
+
 DoWork::DoWork(QObject *parent) :QObject(parent)
 {
 
@@ -331,6 +372,21 @@ QUuid DoWork::GetCurrentWarning()
     return _httpHelper_met.GetAction(CURRENTWARNING);
 }
 
+Model::WarningKeys DoWork::ParseWarningKeys(const QString& txt){
+    if(txt.isEmpty()) return Model::unknown;
+    else if(txt=="ts") return Model::ts;
+    else if(txt=="rainstorm") return Model::rainstorm;
+    else if(txt=="wind") return Model::wind;
+    else if(txt=="fzra") return Model::fzra;
+    else if(txt=="snowdrift") return Model::snowdrift;
+    else if(txt=="rain") return Model::rain;
+    else if(txt=="snow") return Model::snow;
+    else if(txt=="coldx") return Model::coldx;
+    else if(txt=="hotx") return Model::hotx;
+    else if(txt=="fog") return Model::fog;
+    return Model::unknown;
+}
+
 void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
     QString txt(s);
     ResponseModel::GetCurrentWarning r(guid);
@@ -361,9 +417,11 @@ void DoWork::GetCurrentWarningResponse(const QUuid& guid, QByteArray s){
                      if(!w.value_icon.isEmpty())
                      {
                          w.value = Model::Warning::ParseValue(w.value_icon);
+                         auto k1 = Model::Warning::ParseKey(w.icon);
+                         w.key = ParseWarningKeys(k1);
                      }
                 }
-                r.currentWarning.warnings.insert(w.title, w);
+                r.currentWarning.warnings.insert(w.key, w);
             }         
 
             zInfo("CurrentWarning: "+QString::number(r.currentWarning.warnings.count()));
