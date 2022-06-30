@@ -155,7 +155,7 @@ void MainWindow::set_CurrentAlertView(const ViewModel::CurrentAlert& m)
 {
     QString msg;
     for(auto&w:m.currentAlert.alerts){
-        //if(w.value<1) continue;
+        if(w.value<1) continue;
         if(!msg.isEmpty()) msg+=", ";
         msg+=w.title+": "+QString::number(w.value);
     }
@@ -175,7 +175,7 @@ void MainWindow::set_CurrentWarningView(const ViewModel::CurrentWarning& m)
 {
     QString msg;
     for(auto&w:m.currentWarning.warnings){
-        //if(w.value<1) continue;
+        if(w.value<1) continue;
         if(!msg.isEmpty()) msg+=", ";
         msg+=w.title+": "+QString::number(w.value);
     }
